@@ -22,7 +22,7 @@ done
 core_packages=(
     hyprland hypridle hyprlock hyprpolkitagent noctalia quickshell
     xdg-desktop-portal xdg-desktop-portal-hyprland nwg-displays
-    polkit dbus systemd at-spi2-core gvfs
+    polkit dbus systemd at-spi2-core gvfs gsettings-desktop-schemas
 )
 # Commands used by Orbit launchers and user services.
 runtime_packages=(
