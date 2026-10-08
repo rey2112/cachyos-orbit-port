@@ -68,7 +68,7 @@ done
 for relative in hypr/scripts/* hypr/shaders/* hypr/patches/*; do
     link_config "$relative"
 done
-for relative in noctalia/90-orbit-glass.toml noctalia/hooks.toml \
+for relative in noctalia/90-orbit-glass.toml noctalia/hooks.toml noctalia/orbit-templates.toml \
     noctalia/templates/wallpaper-palette.lua; do
     link_config "$relative"
 done

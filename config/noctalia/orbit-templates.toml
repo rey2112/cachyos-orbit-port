@@ -1,0 +1,10 @@
+# Orbit consumes these Noctalia builtin template outputs:
+#   hyprland     -> ~/.config/hypr/noctalia.lua (required by hyprland.lua,
+#                   orbit-theme and the Wallpaper Engine palette)
+#   wezterm      -> ~/.config/wezterm/colors/Noctalia.toml
+#   gtk3/gtk4, qt, kcolorscheme, kitty -> application adapters
+# Noctalia merges config-dir TOML files in name order and replaces arrays
+# wholesale, so this file sorts after config.toml and lists the full set.
+# Bar and panel layout stay in the user's own config.toml.
+[theme.templates]
+builtin_ids = [ "hyprland", "wezterm", "gtk3", "gtk4", "qt", "kcolorscheme", "kitty", "btop", "alacritty" ]
