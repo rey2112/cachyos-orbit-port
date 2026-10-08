@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+# One-shot Orbit setup for a CachyOS machine. UNTESTED: written without access
+# to a CachyOS system. Run it as your desktop user from inside a Hyprland
+# session (Noctalia must be running for template steps), from the checkout:
+#
+#   ./bootstrap/cachyos-first-run [--skip-packages] [--force]
+#
+# Hyprland reloads its config when ~/.config/hypr/hyprland.lua changes, so the
+# desktop switches to the Orbit configuration while this runs. Start a fresh
+# session afterwards.
+#
+# Every step is logged to ~/orbit-first-run.log. A failing step never stops the
+# run; the PASS/FAIL/SKIP table at the end is also written to
+# ~/orbit-first-run-summary.txt. Nothing here touches the bootloader,
+# initramfs or Plymouth.
+set -u -o pipefail
+
+repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+home_dir=${HOME:?HOME is required}
+log_file="$home_dir/orbit-first-run.log"
+summary_file="$home_dir/orbit-first-run-summary.txt"
+timestamp=$(date +%Y%m%dT%H%M%S)
+backup_dir="$home_dir/orbit-backup-$timestamp"
+skip_packages=false
+force=false
+for argument in "$@"; do
+    case "$argument" in
+        --skip-packages) skip_packages=true ;;
+        --force) force=true ;;
+        *) printf 'usage: %s [--skip-packages] [--force]\n' "$0" >&2; exit 2 ;;
+    esac
+done
+
+exec > >(tee -a "$log_file") 2>&1
+
+declare -a step_names=() step_status=() step_notes=() step_seconds=()
+
+record() {
+    step_names+=("$1"); step_status+=("$2"); step_notes+=("${3:-}"); step_seconds+=("${4:-0}")
+}
+
+# step NAME NOTE-ON-FAILURE COMMAND... : run in a subshell so `exit` inside a
+# helper cannot end the whole run; record the outcome either way.
+step() {
+    local name="$1" hint="$2" start rc
+    shift 2
+    printf '\n===== [%s] %s =====\n+ %s\n' "$(date +%T)" "$name" "$*"
+    start=$SECONDS
+    ( "$@" )
+    rc=$?
+    if [[ $rc -eq 0 ]]; then
+        record "$name" PASS "" $((SECONDS - start))
+    elif [[ $rc -eq 99 ]]; then
+        record "$name" SKIP "$hint" $((SECONDS - start))
+    else
+        record "$name" FAIL "rc=$rc; $hint" $((SECONDS - start))
+    fi
+    printf '===== %s -> %s (rc=%s) =====\n' "$name" "${step_status[-1]}" "$rc"
+    return 0
+}
+
+summary() {
+    local index
+    {
+        printf '\nOrbit CachyOS first run, %s\n' "$timestamp"
+        printf 'host=%s kernel=%s hyprland=%s\n' "$(uname -n)" "$(uname -r)" \
+            "$(hyprctl version -j 2>/dev/null | sed -n 's/.*"tag":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1 || true)"
+        printf '%-4s | %-28s | %-6s | %5s | %s\n' '#' 'step' 'result' 'secs' 'note'
+        printf '%s\n' '-----+------------------------------+--------+-------+------------------------------'
+        for index in "${!step_names[@]}"; do
+            printf '%-4s | %-28s | %-6s | %5s | %s\n' "$((index + 1))" "${step_names[index]}" \
+                "${step_status[index]}" "${step_seconds[index]}" "${step_notes[index]}"
+        done
+        printf 'log: %s\nbackup: %s\n' "$log_file" "$backup_dir"
+    } | tee "$summary_file"
+}
+trap summary EXIT
+
+# ---- steps -----------------------------------------------------------------
+
+check_platform() {
+    local ok=0
+    . /etc/os-release 2>/dev/null || true
+    printf 'os-release: ID=%s NAME=%s\n' "${ID:-?}" "${NAME:-?}"
+    if [[ "${ID:-}" != cachyos ]]; then
+        printf 'error: this is not CachyOS (ID=%s); rerun with --force to continue anyway\n' "${ID:-?}"
+        [[ "$force" == true ]] || ok=1
+    fi
+    [[ $EUID -ne 0 ]] || { printf 'error: run as your desktop user, not root\n'; ok=1; }
+    [[ "$(uname -m)" == x86_64 ]] || { printf 'error: the Wallpaper Engine artifact is x86-64 only\n'; ok=1; }
+    if [[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+        printf 'warning: not inside a Hyprland session; deploy template steps and live tests will fail or skip\n'
+    fi
+    if pgrep -x uwsm >/dev/null 2>&1 || systemctl --user is-active --quiet 'wayland-wm@*.service' 2>/dev/null; then
+        printf 'warning: session appears to be uwsm-managed; Orbit expects the plain Hyprland session (see docs/cachyos.md)\n'
+    fi
+    [[ -d /sys/module/nvidia ]] && printf 'nvidia module: loaded (%s)\n' "$(cat /sys/module/nvidia/version 2>/dev/null)"
+    return $ok
+}
+
+install_packages() {
+    [[ "$skip_packages" == false ]] || return 99
+    "$repo_dir/bootstrap/install-packages-arch"
+}
+
+report_polkit_agent_path() {
+    # Confirms the path the hyprpolkitagent unit will find.
+    pacman -Ql hyprpolkitagent | awk '$2 ~ /hyprpolkitagent$/ && $2 !~ /\/$/ {print $2}' | while read -r path; do
+        [[ -f "$path" && -x "$path" ]] && printf 'agent binary: %s\n' "$path"
+    done | grep .
+}
+
+ensure_input_group() {
+    # workspace-alt-tab-input.service runs `sg input` to read Alt key state.
+    id -nG "$USER" | tr ' ' '\n' | grep -qx input && { printf '%s is in group input\n' "$USER"; return 0; }
+    sudo gpasswd -a "$USER" input && printf 'added %s to group input; log out and back in for it to apply\n' "$USER"
+}
+
+backup_config() {
+    local paths=() relative
+    mkdir -p "$backup_dir"
+    for relative in .config/hypr .config/noctalia .config/quickshell .config/gtk-3.0 .config/gtk-4.0 \
+        .config/kitty .config/wezterm .config/zed .config/qt6ct .config/zen .config/obsidian \
+        .config/actions-for-nautilus .config/systemd/user .config/uwsm .local/bin .local/lib \
+        .local/share/applications .local/share/sounds/Orbit .local/share/hyprland/plugins; do
+        [[ -e "$home_dir/$relative" ]] && paths+=("$relative")
+    done
+    [[ ${#paths[@]} -gt 0 ]] || { printf 'nothing to back up\n'; return 0; }
+    tar -C "$home_dir" -czf "$backup_dir/home-config.tar.gz" "${paths[@]}"
+    printf 'backed up: %s\n' "${paths[*]}"
+    printf 'restore with: tar -C "$HOME" -xzf %s/home-config.tar.gz\n' "$backup_dir"
+}
+
+move_aside() {
+    # Move one regular file or symlink into the backup, preserving its path.
+    local path="$1" relative
+    relative=${path#"$home_dir"/}
+    [[ -f "$path" || -L "$path" ]] || { printf 'not moving non-file: %s\n' "$path"; return 1; }
+    mkdir -p "$backup_dir/conflicts/$(dirname "$relative")"
+    mv -- "$path" "$backup_dir/conflicts/$relative" && printf 'moved aside: %s -> %s\n' "$path" "$backup_dir/conflicts/$relative"
+}
+
+migrate_dry_run() {
+    # Blocked destinations are expected on a CachyOS install and are handled by
+    # resolve-conflicts; this step fails only if migrate itself cannot run.
+    "$repo_dir/bootstrap/migrate" --dry-run > "$backup_dir/migrate-dry-run-before.txt"
+    local rc=$?
+    cat "$backup_dir/migrate-dry-run-before.txt"
+    grep -q -e '^READY FOR ADOPTION' -e '^BLOCKED:' "$backup_dir/migrate-dry-run-before.txt" || return "${rc/#0/1}"
+    printf 'blocked destinations: %s\n' "$(grep -c -- '-> BLOCK$' "$backup_dir/migrate-dry-run-before.txt")"
+}
+
+resolve_conflicts() {
+    # Distribution skeleton files (CachyOS ships ~/.config/hypr/hyprland.lua,
+    # kitty.conf, gtk css and qt6ct.conf) block deploy. They are already in the
+    # tarball; move each blocked file into $backup_dir/conflicts.
+    local destination failed=0 generated
+    while IFS= read -r destination; do
+        [[ -n "$destination" ]] || continue
+        move_aside "$destination" || failed=1
+    done < <(awk -F' -> ' '$NF == "BLOCK" && ($(NF-1) == "UNEXPECTED_CONTENT" || $(NF-1) == "UNRELATED_SYMLINK") {print $2}' \
+        "$backup_dir/migrate-dry-run-before.txt")
+    # Generated outputs that deploy links but orbit-theme rewrites as regular
+    # files; migrate does not cover them and a rerun of deploy would refuse them.
+    for generated in "$home_dir/.config/hypr/hyprqt6engine.conf" "$home_dir/.config/wezterm/wezterm.lua"; do
+        if [[ -e "$generated" && ! -L "$generated" ]]; then move_aside "$generated" || failed=1; fi
+    done
+    "$repo_dir/bootstrap/migrate" --dry-run > "$backup_dir/migrate-dry-run-after.txt" || {
+        printf 'migrate still reports blocked destinations:\n'
+        grep -- '-> BLOCK$' "$backup_dir/migrate-dry-run-after.txt"
+        return 1
+    }
+    return $failed
+}
+
+seed_monitor_layout() {
+    # hyprland.lua requires monitors.lua; nwg-displays generates the real one.
+    local monitors="$home_dir/.config/hypr/monitors.lua"
+    [[ -e "$monitors" ]] && { printf 'monitors.lua exists; left as is\n'; return 0; }
+    mkdir -p "${monitors%/*}"
+    printf '%s\n' '-- Placeholder written by bootstrap/cachyos-first-run.' \
+        '-- Run nwg-displays to generate the machine-local monitor layout.' > "$monitors"
+    printf 'wrote placeholder %s\n' "$monitors"
+}
+
+deploy() {
+    "$repo_dir/bootstrap/deploy"
+}
+
+check_noctalia_outputs() {
+    local missing=0 file
+    for file in "$home_dir/.config/hypr/noctalia.lua" "$home_dir/.config/wezterm/colors/Noctalia.toml"; do
+        if [[ -f "$file" ]]; then printf 'present: %s\n' "$file"; else printf 'missing: %s\n' "$file"; missing=1; fi
+    done
+    return $missing
+}
+
+install_oblique_cursor() {
+    # Hyprcursor theme named by hyprland.lua (HYPRCURSOR_THEME=oblique-cursor).
+    local commit=ecddc552b8a5eb53fbf7498f0e60fbd634906b4a
+    local source="${XDG_CACHE_HOME:-$home_dir/.cache}/orbit-hyprland-plugins/oblique-cursor-$commit"
+    local destination="$home_dir/.local/share/icons/oblique-cursor"
+    [[ -d "$source/.git" ]] || git clone --filter=blob:none https://github.com/kayxean/oblique-cursor.git "$source" || return 1
+    git -C "$source" fetch --quiet --depth=1 origin "$commit" && git -C "$source" checkout --quiet --detach "$commit" || return 1
+    if [[ -e "$destination" ]]; then
+        diff -rq "$source/dist/theme_oblique-cursor" "$destination" >/dev/null && { printf 'already installed\n'; return 0; }
+        printf 'refusing to replace existing %s\n' "$destination"
+        return 1
+    fi
+    mkdir -p "${destination%/*}" && cp -r "$source/dist/theme_oblique-cursor" "$destination"
+}
+
+install_wallpaper() {
+    ORBIT_WALLPAPER_REPO_URL="${ORBIT_WALLPAPER_REPO_URL:-https://github.com/CleanShirtUK/orbit-wallpaper-engine.git}" \
+        "$repo_dir/bin/dotfiles-install-wallpaper" || return 1
+    # The tracked x86-64 ELF is used as is; record its hash for the report.
+    sha256sum "$repo_dir/bin/orbit-wallpaper-engine"
+}
+
+verify() {
+    "$repo_dir/bootstrap/verify"
+}
+
+tests_contract() {
+    "$repo_dir/tests/orbit/run-all"
+}
+
+tests_live() {
+    [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] || { printf 'no Hyprland session; live tests skipped\n'; return 99; }
+    "$repo_dir/tests/orbit/run-all" --live
+}
+
+# ---- run -------------------------------------------------------------------
+
+printf 'Orbit CachyOS first run %s from %s (git %s)\n' "$timestamp" "$repo_dir" \
+    "$(git -C "$repo_dir" rev-parse --short HEAD 2>/dev/null || printf unknown)"
+mkdir -p "$backup_dir"
+
+step platform-check 'not CachyOS, root, or non-x86-64; rerun with --force only if intended' check_platform
+if [[ "${step_status[0]}" == FAIL ]]; then
+    printf 'Stopping: platform check failed.\n'
+    exit 1
+fi
+step install-packages 'see pacman/paru output in the log' install_packages
+step polkit-agent-path 'hyprpolkitagent not installed or binary path unexpected' report_polkit_agent_path
+step input-group 'sg input needs group membership for Alt+Tab' ensure_input_group
+step backup-config 'tar failed; check free space' backup_config
+step migrate-dry-run 'blocked destinations; resolved in the next step' migrate_dry_run
+step seed-monitors 'could not write placeholder' seed_monitor_layout
+step resolve-conflicts 'a destination could not be moved; see log' resolve_conflicts
+step deploy 'templates-apply needs a running Noctalia inside Hyprland' deploy
+step noctalia-outputs 'run `noctalia msg templates-apply` in the session' check_noctalia_outputs
+step plugin-hyprglass 'build failed; see compiler output' "$repo_dir/bin/install-hyprglass"
+step plugin-scrolloverview 'build failed; check Lua 5.5 (pkg-config lua)' "$repo_dir/bin/install-scrolloverview"
+step plugin-hyprwindowshade 'build failed; headers or patch' "$repo_dir/bin/install-hyprwindowshade"
+step plugin-dynamic-cursors 'build failed; see compiler output' "$repo_dir/bin/install-dynamic-cursors"
+step oblique-cursor 'clone or copy failed' install_oblique_cursor
+step wallpaper-engine 'external build or service start failed' install_wallpaper
+step verify 'deployment links or syntax check failed' verify
+step tests-contract 'see summary.json under ~/.local/state/orbit/tests' tests_contract
+step tests-live 'see summary.json under ~/.local/state/orbit/tests' tests_live
+
+printf '\nNext: run nwg-displays, then log out and start a new (non-uwsm) Hyprland session.\n'
