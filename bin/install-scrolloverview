@@ -19,10 +19,21 @@ for package in hyprland pixman-1 libdrm pangocairo libinput libudev wayland-serv
         exit 1
     }
 done
-if ! pkg-config --exists 'lua5.4 >= 5.4' && ! pkg-config --exists 'lua >= 5.4'; then
-    printf '%s\n' 'error: Lua 5.4 development package is unavailable' >&2
-    exit 1
+# ScrollOverview calls the Lua C API on Hyprland's own lua_State, so it must be
+# compiled against the Lua that Hyprland links. Hyprland 0.56 requires Lua 5.5
+# and searches these pkg-config names in this order (CMakeLists.txt). Upstream's
+# Makefile prefers lua5.4 when present, which would mismatch Hyprland.
+lua_pkg=''
+for candidate in lua55 lua5.5 lua-55 lua-5.5; do
+    if pkg-config --exists "$candidate"; then lua_pkg="$candidate"; break; fi
+done
+if [[ -z "$lua_pkg" ]] && pkg-config --exists 'lua >= 5.5' && pkg-config --exists 'lua < 5.6'; then
+    lua_pkg=lua
 fi
+[[ -n "$lua_pkg" ]] || {
+    printf '%s\n' 'error: Lua 5.5 development package is unavailable (Hyprland 0.56 links Lua 5.5)' >&2
+    exit 1
+}
 
 if command -v hyprctl >/dev/null && command -v python3 >/dev/null; then
     running_commit=$(hyprctl version -j 2>/dev/null | python3 -c 'import json, sys; print(json.load(sys.stdin).get("commit", ""))' || true)
@@ -49,7 +60,7 @@ git -C "$source_dir" reset --quiet --hard "$repo_commit"
 (
     cd "$source_dir"
     make clean >/dev/null 2>&1 || true
-    make all
+    make all LUA_PKG="$lua_pkg"
     mkdir -p "$plugin_dir"
     install -m 0755 scrolloverview.so "$plugin_dir/libscrolloverview.so"
 )
