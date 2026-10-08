@@ -6,7 +6,9 @@ ConditionEnvironment=WAYLAND_DISPLAY
 
 [Service]
 Type=simple
-ExecStart=/usr/libexec/hyprpolkitagent
+# The binary lives in the distribution's libexec directory: /usr/libexec on
+# Fedora, below /usr/lib on Arch/CachyOS. Use the first executable candidate.
+ExecStart=/usr/bin/sh -c 'for p in /usr/libexec/hyprpolkitagent /usr/lib/hyprpolkitagent/hyprpolkitagent /usr/lib/hyprpolkitagent; do [ -f "$$p" ] && [ -x "$$p" ] && exec "$$p"; done; echo "hyprpolkitagent binary not found" >&2; exit 1'
 Slice=session.slice
 TimeoutStopSec=5sec
 Restart=on-failure
