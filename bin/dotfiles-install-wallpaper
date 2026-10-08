@@ -42,9 +42,14 @@ git -C "$repo_dir" fetch --tags origin
 git -C "$repo_dir" checkout "$ref"
 make -C "$repo_dir"
 install_noctalia_integration
-install -D -m 0755 "$repo_dir/bin/orbit-wallpaper-launcher" "$HOME/.local/bin/orbit-wallpaper-launcher"
-install -D -m 0644 "$repo_dir/desktop/orbit-wallpaper-engine-settings.desktop" \
-    "$HOME/.local/share/applications/orbit-wallpaper-engine-settings.desktop"
+# The routed launcher and its desktop entry are Orbit-owned (the external
+# v0.2.0 tree has no bin/orbit-wallpaper-launcher). bootstrap/deploy normally
+# links/seeds them already; install them only when absent.
+orbit_dir=$(CDPATH= cd -- "$(dirname -- "$(readlink -f -- "$0")")/.." && pwd)
+install_external_file "$orbit_dir/bin/orbit-wallpaper-launcher" \
+    "$HOME/.local/bin/orbit-wallpaper-launcher" 0755
+install_external_file "$orbit_dir/desktop/orbit-wallpaper-engine-settings.desktop" \
+    "$HOME/.local/share/applications/orbit-wallpaper-engine-settings.desktop" 0644
 
 systemctl --user daemon-reload
 systemctl --user enable --now orbit-wallpaper-engine.service
