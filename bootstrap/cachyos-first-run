@@ -195,6 +195,17 @@ check_noctalia_outputs() {
     return $missing
 }
 
+check_bar_name() {
+    # The global menu anchors to layer namespace noctalia-bar-Top and
+    # orbit-noctalia-session-chrome hides/shows bar "Top". Report only; the
+    # bar layout in ~/.config/noctalia/config.toml stays user-owned.
+    local config="$home_dir/.config/noctalia/config.toml"
+    grep -Eq '^[[:space:]]*\[bar\.Top\]' "$config" 2>/dev/null && { printf 'found [bar.Top] in %s\n' "$config"; return 0; }
+    printf 'no [bar.Top] in %s; bars defined: %s\n' "$config" \
+        "$(grep -Eo '^[[:space:]]*\[bar\.[^].]+\]' "$config" 2>/dev/null | tr -d ' ' | tr '\n' ' ')"
+    return 1
+}
+
 install_oblique_cursor() {
     # Hyprcursor theme named by hyprland.lua (HYPRCURSOR_THEME=oblique-cursor).
     local commit=ecddc552b8a5eb53fbf7498f0e60fbd634906b4a
@@ -250,6 +261,7 @@ step seed-monitors 'could not write placeholder' seed_monitor_layout
 step resolve-conflicts 'a destination could not be moved; see log' resolve_conflicts
 step deploy 'templates-apply needs a running Noctalia inside Hyprland' deploy
 step noctalia-outputs 'run `noctalia msg templates-apply` in the session' check_noctalia_outputs
+step noctalia-bar-name 'rename your bar table to [bar.Top] (docs/cachyos.md)' check_bar_name
 step plugin-hyprglass 'build failed; see compiler output' "$repo_dir/bin/install-hyprglass"
 step plugin-scrolloverview 'build failed; check Lua 5.5 (pkg-config lua)' "$repo_dir/bin/install-scrolloverview"
 step plugin-hyprwindowshade 'build failed; headers or patch' "$repo_dir/bin/install-hyprwindowshade"
