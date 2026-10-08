@@ -6,6 +6,8 @@ These are current, non-blocking v0.1 limitations rather than resolved defects.
   `efb50993780079460b0cbed1363e2166a2de1d9f`. Hyprland plugins may need to be
   rebuilt after compositor or relevant dependency ABI changes.
 - The v0.1 Wallpaper Engine deployment artifact is x86-64 Linux only.
+- The CachyOS/Arch port is untested; its risks are listed in
+  [`cachyos.md`](cachyos.md#known-risks).
 - Monitor layout is generated per machine by `nwg-displays`; Sunshine also
   requires a machine-local display profile and has not been validated across
   multiple hardware profiles.

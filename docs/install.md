@@ -1,7 +1,8 @@
 # Installation
 
 This is the canonical Orbit v0.1 installation path. It assumes a Fedora 44
-Wayland system with Hyprland installed or ready to install. Commands below are
+Wayland system with Hyprland installed or ready to install. For CachyOS/Arch,
+follow [`cachyos.md`](cachyos.md) instead (untested port). Commands below are
 run from the Orbit checkout unless stated otherwise.
 
 ## 1. Install Dependencies
@@ -71,9 +72,9 @@ compositor:
 ./bin/install-hyprwindowshade
 ```
 
-Dynamic Cursors is also ABI-sensitive. Its pinned source revision and upstream
-build path are documented in [`external-components.md`](external-components.md);
-build it outside the checkout and install `out/dynamic-cursors.so` to
+Dynamic Cursors is also ABI-sensitive. `./bin/install-dynamic-cursors` builds
+its pinned revision (documented in [`external-components.md`](external-components.md))
+outside the checkout and installs `out/dynamic-cursors.so` to
 `~/.local/share/hyprland/plugins/dynamic-cursors.so`.
 
 The accepted reference for all four plugins is Hyprland `0.56.2` at commit

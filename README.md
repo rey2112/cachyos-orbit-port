@@ -18,6 +18,9 @@ The supported reference is Fedora 44 with Wayland and:
 - Noctalia `5.0.0~beta.9-1.fc44`;
 - an x86-64 system for the v0.1 Wallpaper Engine artifact.
 
+An untested CachyOS (Arch) port, which ships the same Hyprland 0.56.2 commit,
+is described in [`docs/cachyos.md`](docs/cachyos.md).
+
 Compatibility beyond this reference is not promised. Hyprland plugins use
 private compositor APIs and may need rebuilding after Hyprland or ABI-related
 dependency updates.
@@ -36,14 +39,15 @@ dependency updates.
 ## Install
 
 Use the canonical, multi-step guide in [`docs/install.md`](docs/install.md).
-In brief, install Fedora dependencies, clone this repository, review any
+In brief, install the distribution dependencies (Fedora, or
+`bootstrap/install-packages-arch` on Arch/CachyOS), clone this repository, review any
 existing-file adoption with `bootstrap/migrate`, run `bootstrap/deploy`, build
 the pinned plugins with their dedicated installers, install the pinned
 Wallpaper Engine integration, and configure monitors with `nwg-displays`.
 
 Deployment is refusal-oriented: it will not overwrite unrelated files. It
 creates Orbit-owned symlinks, seeds selected files only when absent, enables
-core user units, and refreshes Noctalia templates. It does not install Fedora
+core user units, and refreshes Noctalia templates. It does not install distribution
 packages or perform privileged operations.
 
 ## Architecture

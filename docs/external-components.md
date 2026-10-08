@@ -15,6 +15,9 @@ Hyprland commit efb50993780079460b0cbed1363e2166a2de1d9f
 Noctalia 5.0.0~beta.9-1.fc44
 ```
 
+The untested CachyOS port targets Arch `hyprland 0.56.2-4` (same upstream
+commit) and Arch `noctalia 5.2.1-1`; see [`cachyos.md`](cachyos.md).
+
 Hyprland plugins use private compositor APIs and must be rebuilt when the
 Hyprland ABI or relevant dependency ABI changes. The running compositor loads
 plugins from `~/.local/share/hyprland/plugins/` through the authored
@@ -25,11 +28,11 @@ plugins from `~/.local/share/hyprland/plugins/` through the authored
 | Component | Upstream and revision | Current installation | Build/rebuild procedure | Coupling |
 |---|---|---|---|---|
 | Hyprglass | `https://github.com/hyprnux/hyprglass.git` at `5bc835dcc909cef6980291688143048cf16942b5` | `~/.local/share/hyprland/plugins/hyprglass.so` | Run `bin/install-hyprglass`; it fetches and verifies the pinned commit in the cache, runs the upstream `make`, and installs `hyprglass.so` | Build against the installed Hyprland ABI; the installer warns when the running compositor differs from the validated reference |
-| ScrollOverview | `https://github.com/yayuuu/hyprland-scroll-overview.git` at `f9248ab6bee770e9d68813b48cc6ca12b3271254` | `~/.local/share/hyprland/plugins/libscrolloverview.so` | Run `bin/install-scrolloverview`; it fetches and verifies the pinned commit in the cache, runs the upstream production `make all`, and installs it as `libscrolloverview.so` | Plugin API is Hyprland-version-sensitive; the installer warns when the running compositor differs from the validated reference; upstream's `new-release` branch is not used |
-| HyprWindowShade | `https://github.com/ManofJELLO/HyprWindowShade.git` at `40b756befa36cfd5cbed65d554c719141a65c420` | `~/.local/share/hyprland/plugins/HyprWindowShade.so` | Run `bin/install-hyprwindowshade`; it fetches the pinned commit, applies `config/hypr/patches/hyprwindowshade-per-window-effects.patch`, and builds with the matching `/var/cache/hyprpm/$USER/headersRoot` headers | Requires Hyprland 0.56-compatible headers and the running compositor commit; the patch is Orbit-owned |
-| Dynamic Cursors | `https://github.com/virtcode/hypr-dynamic-cursors.git` at `5a224284872208b5324759d535d65061043725de` (`origin/v0.56.2`) | `~/.local/share/hyprland/plugins/dynamic-cursors.so` | Check out the pinned revision, run `make all`, and install `out/dynamic-cursors.so`; the upstream `hyprpm.toml` records the Hyprland 0.56.2 pin | x86-64 function-hook plugin; rebuild for the installed Hyprland ABI |
+| ScrollOverview | `https://github.com/yayuuu/hyprland-scroll-overview.git` at `f9248ab6bee770e9d68813b48cc6ca12b3271254` | `~/.local/share/hyprland/plugins/libscrolloverview.so` | Run `bin/install-scrolloverview`; it fetches and verifies the pinned commit in the cache, runs the upstream production `make all` with `LUA_PKG` set to Hyprland's Lua 5.5 module, and installs it as `libscrolloverview.so` | Plugin API is Hyprland-version-sensitive; the installer warns when the running compositor differs from the validated reference; upstream's `new-release` branch is not used |
+| HyprWindowShade | `https://github.com/ManofJELLO/HyprWindowShade.git` at `40b756befa36cfd5cbed65d554c719141a65c420` | `~/.local/share/hyprland/plugins/HyprWindowShade.so` | Run `bin/install-hyprwindowshade`; it fetches the pinned commit, applies `config/hypr/patches/hyprwindowshade-per-window-effects.patch`, and builds with the matching `/var/cache/hyprpm/$USER/headersRoot` headers, falling back to `pkg-config hyprland` system headers (Arch) | Requires Hyprland 0.56-compatible headers and the running compositor commit; the patch is Orbit-owned |
+| Dynamic Cursors | `https://github.com/virtcode/hypr-dynamic-cursors.git` at `5a224284872208b5324759d535d65061043725de` (`origin/v0.56.2`) | `~/.local/share/hyprland/plugins/dynamic-cursors.so` | Run `bin/install-dynamic-cursors`; it fetches and verifies the pinned commit in the cache, runs `make all`, and installs `out/dynamic-cursors.so`; the upstream `hyprpm.toml` records the Hyprland 0.56.2 pin | x86-64 function-hook plugin; rebuild for the installed Hyprland ABI |
 
-The two dedicated installers keep source and build trees under
+The Hyprglass, ScrollOverview, and Dynamic Cursors installers keep source and build trees under
 `$XDG_CACHE_HOME/orbit-hyprland-plugins` (or `$HOME/.cache/...`) and install
 only the resulting `.so` files under `~/.local/share/hyprland/plugins/`. They
 are safe to rerun, verify detached HEAD against the accepted revision, and do

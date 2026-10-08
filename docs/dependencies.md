@@ -2,7 +2,9 @@
 
 Orbit is validated on Fedora 44 with Wayland, Hyprland `0.56.2`, and Noctalia.
 Package names can vary by enabled Fedora repositories; the groups below are
-the intended dependency boundary, not an inventory of one machine.
+the intended dependency boundary, not an inventory of one machine. Arch/CachyOS
+names are mapped in [`cachyos.md`](cachyos.md) and installed by
+`bootstrap/install-packages-arch`.
 
 ## Required Fedora Runtime
 
@@ -14,7 +16,10 @@ the intended dependency boundary, not an inventory of one machine.
 - `nwg-displays` for the machine-local monitor layout;
 - `bash`, `python3`, `python3-pyudev`, `jq`, `socat`, `util-linux-core`,
   `shadow-utils`, `procps-ng`, `grim`, `slurp`, `wl-clipboard`, `zenity`,
-  `libcanberra-gtk3`, and `alsa-utils`.
+  `libcanberra-gtk3`, and `alsa-utils`;
+- the Python modules imported by Orbit helpers: `evdev` (`python3-evdev`),
+  `dbus` (`python3-dbus`), and `gi` (`python3-gobject`);
+- the HyprQt6 Engine Qt platform theme (`QT_QPA_PLATFORMTHEME=hyprqt6engine`).
 
 These provide the commands used by the core launchers and user services,
 including `systemctl`, `hyprctl`, `flock`, `sg`, `ps`, `wl-copy`, and
@@ -35,7 +40,8 @@ Required by the source-built plugin installers, not by a binary-only runtime:
 - `git`, `gcc-c++`, `make`, `pkgconf`, and `patch`;
 - the installed Hyprland development metadata and headers;
 - component-specific development packages: Pixman, libdrm, PangoCairo,
-  libinput, libudev, Wayland server, xkbcommon, and Lua 5.4.
+  libinput, libudev, Wayland server, xkbcommon, and Lua 5.5 (Hyprland 0.56
+  links Lua 5.5; ScrollOverview must match it).
 
 Hyprland plugins are ABI-sensitive. Installers fail clearly when required
 compiler or `pkg-config` dependencies are missing and warn when the running
