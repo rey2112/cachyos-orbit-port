@@ -5,7 +5,14 @@ readonly zone='public'
 readonly port='53317'
 
 if ! command -v firewall-cmd >/dev/null 2>&1; then
-    printf 'firewall-cmd was not found. Install firewalld first.\n' >&2
+    # Arch/CachyOS commonly use ufw instead of firewalld.
+    if command -v ufw >/dev/null 2>&1; then
+        sudo ufw allow "$port/tcp" comment LocalSend
+        sudo ufw allow "$port/udp" comment LocalSend
+        sudo ufw status | grep -F "$port" || true
+        exit 0
+    fi
+    printf 'Neither firewall-cmd nor ufw was found. Install firewalld or ufw first.\n' >&2
     exit 1
 fi
 
