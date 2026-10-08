@@ -103,6 +103,21 @@ hl.env("HYPRCURSOR_THEME", hyprcursorTheme)        -- Canonical compositor/serve
 hl.env("HYPRCURSOR_SIZE", tostring(cursorSize))    -- Keep compositor and client cursor sizes aligned.
 hl.env("XCURSOR_THEME", xcursorFallbackTheme)       -- Existing XCursor fallback for legacy clients.
 hl.env("XCURSOR_SIZE", tostring(cursorSize))        -- X11 cursor compatibility adapter.
+-- orbit-session-bootstrap imports QT_QPA_PLATFORMTHEME and refuses an empty
+-- value. Keep a session-provided value; otherwise use the hyprqt6engine bridge.
+if not os.getenv("QT_QPA_PLATFORMTHEME") then
+    hl.env("QT_QPA_PLATFORMTHEME", "hyprqt6engine")
+end
+-- Proprietary NVIDIA driver (untested on the reference platform). CachyOS
+-- exports GBM_BACKEND/EGL_PLATFORM from /etc/profile.d only for login shells;
+-- set the remaining variables only when the nvidia module is loaded.
+local nvidiaModule = io.open("/sys/module/nvidia/version", "r")
+if nvidiaModule then
+    nvidiaModule:close()
+    if not os.getenv("GBM_BACKEND") then hl.env("GBM_BACKEND", "nvidia-drm") end
+    hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+    hl.env("LIBVA_DRIVER_NAME", "nvidia")
+end
 -- Allow hyprpm (Hyprland plugin manager) to load/unload plugins without sudo.
 hl.permission("/usr/(bin|local/bin)/hyprpm", "plugin", "allow")
 
