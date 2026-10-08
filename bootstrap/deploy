@@ -59,6 +59,9 @@ link_config() {
     link_owned "$repo_dir/config/$relative" "$home_dir/.config/$relative"
 }
 
+# The relative globs below (hypr/scripts/*, quickshell/global-menu/*, ...)
+# must expand inside config/, not the caller's working directory.
+cd "$repo_dir/config"
 for relative in \
     hypr/hyprland.lua hypr/hypridle.conf hypr/hyprlock.conf \
     hypr/hyprqt6engine.conf hypr/hyprtoolkit.conf hypr/appearance.toml \
