@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Install Orbit's package dependencies on Arch Linux / CachyOS.
+#
+# Package names were checked on 2026-10-08 against the archlinux/state repo
+# snapshot (official repos), the AUR GitHub mirror and CachyOS-PKGBUILDS; see
+# docs/cachyos.md for the mapping. This script is UNTESTED on a real system.
+#
+# usage: bootstrap/install-packages-arch [--optional] [--dry-run]
+set -euo pipefail
+
+optional=false
+dry_run=false
+for argument in "$@"; do
+    case "$argument" in
+        --optional) optional=true ;;
+        --dry-run) dry_run=true ;;
+        *) printf 'usage: %s [--optional] [--dry-run]\n' "$0" >&2; exit 2 ;;
+    esac
+done
+
+# Compositor, shell and session (Fedora names in docs/dependencies.md).
+core_packages=(
+    hyprland hypridle hyprlock hyprpolkitagent noctalia quickshell
+    xdg-desktop-portal xdg-desktop-portal-hyprland nwg-displays
+    polkit dbus systemd at-spi2-core gvfs
+)
+# Commands used by Orbit launchers and user services.
+runtime_packages=(
+    bash python python-pyudev python-evdev python-dbus python-gobject
+    jq socat util-linux shadow procps-ng grim slurp wl-clipboard zenity
+    libcanberra alsa-utils
+)
+# Appearance adapters referenced by the authored configuration.
+appearance_packages=(
+    qt6ct qt6-wayland ttf-jetbrains-mono adwaita-cursors wezterm kitty nautilus
+)
+# Plugin builds (bin/install-*) and hyprpm. Hyprland 0.56 links Lua 5.5,
+# which is Arch's `lua`; do not substitute lua54.
+build_packages=(
+    git gcc make pkgconf patch pixman libdrm pango cairo libinput systemd-libs
+    wayland libxkbcommon lua mesa libglvnd libpng cmake meson cpio
+)
+aur_packages=(
+    hyprqt6engine      # Qt platform theme bridge used by orbit-launch and hyprqt6engine.conf
+    kora-icon-theme    # icon theme named by orbit-theme and hyprqt6engine.conf
+)
+optional_packages=(
+    steam gamemode obsidian zed gpu-screen-recorder flatpak python-nautilus
+    fastfetch plymouth
+)
+optional_aur_packages=(zen-browser-bin sunshine-bin)
+
+# NVIDIA userspace for VA-API; the driver itself is managed by CachyOS (chwd).
+if [[ -d /sys/module/nvidia ]] || { command -v lspci >/dev/null && lspci -nn | grep -qi 'vga.*nvidia'; }; then
+    runtime_packages+=(libva-nvidia-driver egl-wayland)
+fi
+
+run() {
+    printf '+ %s\n' "$*"
+    [[ "$dry_run" == true ]] || "$@"
+}
+
+command -v pacman >/dev/null || { printf 'error: pacman not found; this script is for Arch/CachyOS\n' >&2; exit 1; }
+
+repo_packages=("${core_packages[@]}" "${runtime_packages[@]}" "${appearance_packages[@]}" "${build_packages[@]}")
+aur=("${aur_packages[@]}")
+if [[ "$optional" == true ]]; then
+    repo_packages+=("${optional_packages[@]}")
+    aur+=("${optional_aur_packages[@]}")
+fi
+
+run sudo pacman -S --needed "${repo_packages[@]}"
+
+if ! command -v paru >/dev/null; then
+    # CachyOS ships paru in its repositories; plain Arch users install it from the AUR.
+    run sudo pacman -S --needed paru || {
+        printf 'error: paru is unavailable; install an AUR helper and rerun\n' >&2
+        exit 1
+    }
+fi
+run paru -S --needed "${aur[@]}"
+
+printf 'Orbit packages installed. Oblique cursor and Orbit Wallpaper Engine are not packaged; see docs/cachyos.md.\n'
