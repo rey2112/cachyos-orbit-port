@@ -80,6 +80,8 @@ def load_palette(name: str) -> tuple[str, dict, dict]:
     except OSError as error:
         raise SystemExit(f"Noctalia palette output is unavailable: {NOCTALIA_SOURCE}") from error
     raw = dict(re.findall(r'^local (primary|surface|on_surface|secondary|on_secondary|error|on_error|shadow) = "rgb\(([0-9a-fA-F]{6})\)"$', source, re.MULTILINE))
+    # Noctalia 5.2 no longer emits `local shadow`; Material 3 shadow is black.
+    raw.setdefault("shadow", "000000")
     if len(raw) != 8:
         raise SystemExit(f"Noctalia palette output is incomplete: {NOCTALIA_SOURCE}")
     raw = {key: f"#{value.lower()}" for key, value in raw.items()}
