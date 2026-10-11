@@ -162,6 +162,19 @@ CachyOS's `/etc/profile.d/Hyprland.sh` exports `GBM_BACKEND=nvidia-drm` and
 `config/hypr/hyprland.lua` sets those two when `/sys/module/nvidia` is
 loaded, and sets `GBM_BACKEND` only if it is unset. **Untested.**
 
+### Wallpaper engine on NVIDIA
+
+The bundled `bin/orbit-wallpaper-engine` (kept as shipped) only dispatches
+Wayland events that the EGL driver has already read. NVIDIA's driver does not
+read them, and nothing is drawn while the wallpaper is hidden, so events pile
+up until Hyprland disconnects the engine (`Wayland dispatch failed`; the
+wallpaper disappears). `bin/install-wallpaper-engine-patched` builds the
+upstream v0.2.0 source with
+`config/hypr/patches/orbit-wallpaper-engine-read-wayland-events.patch`, which
+reads events every frame, installs it as `~/.local/bin/orbit-wallpaper-engine-patched`,
+and points the service at it with a systemd drop-in. `--revert` removes the
+drop-in. Compiled here against v0.2.0; untested on NVIDIA hardware.
+
 ## end-4 Shell Mode
 
 To use end-4's illogical-impulse shell instead of Noctalia, while keeping

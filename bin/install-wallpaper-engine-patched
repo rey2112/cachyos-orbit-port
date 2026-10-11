@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Build Orbit Wallpaper Engine v0.2.0 from source with Orbit's Wayland event
+# patch and run it instead of the bundled binary (which stays untouched).
+#
+#   bin/install-wallpaper-engine-patched           build, install, restart
+#   bin/install-wallpaper-engine-patched --revert  go back to the bundled binary
+#
+# The patch makes the render loop read compositor events itself. Without it,
+# on NVIDIA (and whenever the wallpaper is hidden) events are never read, and
+# Hyprland eventually disconnects the engine ("Wayland dispatch failed").
+set -euo pipefail
+
+repo_url="${ORBIT_WALLPAPER_REPO_URL:-https://github.com/CleanShirtUK/orbit-wallpaper-engine.git}"
+ref="${ORBIT_WALLPAPER_REF:-v0.2.0}"
+build_dir="${XDG_CACHE_HOME:-$HOME/.cache}/orbit-wallpaper-engine-build"
+orbit_dir=$(CDPATH= cd -- "$(dirname -- "$(readlink -f -- "$0")")/.." && pwd)
+patch_file="$orbit_dir/config/hypr/patches/orbit-wallpaper-engine-read-wayland-events.patch"
+binary="$HOME/.local/bin/orbit-wallpaper-engine-patched"
+dropin_dir="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/orbit-wallpaper-engine.service.d"
+dropin="$dropin_dir/10-patched-engine.conf"
+
+restart() {
+    systemctl --user daemon-reload
+    systemctl --user restart orbit-wallpaper-engine.service
+}
+
+if [[ "${1:-}" == --revert ]]; then
+    rm -f "$dropin"
+    restart
+    printf 'Reverted to the bundled engine (%s).\n' "$HOME/.local/bin/orbit-wallpaper-engine"
+    exit 0
+fi
+[[ $# -eq 0 ]] || { printf 'usage: %s [--revert]\n' "$0" >&2; exit 2; }
+
+for tool in git make cc pkg-config; do
+    command -v "$tool" >/dev/null || { printf 'error: %s is required (pacman -S base-devel git)\n' "$tool" >&2; exit 1; }
+done
+
+rm -rf "$build_dir"
+git -c advice.detachedHead=false clone --quiet --depth 1 --branch "$ref" "$repo_url" "$build_dir"
+git -C "$build_dir" apply "$patch_file"
+make -C "$build_dir" >/dev/null
+install -D -m 0755 "$build_dir/orbit-wallpaper-engine" "$binary"
+
+mkdir -p "$dropin_dir"
+cat >"$dropin" <<CONF
+# Written by bin/install-wallpaper-engine-patched; remove with --revert.
+[Service]
+ExecStart=
+ExecStart=%h/.local/bin/orbit-wallpaper-engine-patched
+CONF
+restart
+printf 'Patched engine %s installed at %s and running.\n' "$ref" "$binary"
+printf 'Undo with: %s --revert\n' "$0"

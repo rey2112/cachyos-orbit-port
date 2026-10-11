@@ -1,0 +1,50 @@
+--- a/renderer.c
++++ b/renderer.c
+@@ -14,6 +14,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <strings.h>
++#include <poll.h>
+ #include <sys/stat.h>
+ #include <time.h>
+ #include <unistd.h>
+@@ -1554,6 +1555,30 @@
+     eglMakeCurrent(app->egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+ }
+ 
++// Read compositor events without blocking. The render loop only dispatched
++// events that something else had already read from the socket; with Mesa,
++// eglSwapBuffers does that read, but the NVIDIA driver (and the hidden state,
++// which swaps nothing) never does. Unread events then pile up until the
++// compositor drops the client ("Wayland dispatch failed").
++static int dispatch_wayland_nonblocking(struct wl_display *display) {
++    while (wl_display_prepare_read(display) != 0) {
++        if (wl_display_dispatch_pending(display) < 0) return -1;
++    }
++    if (wl_display_flush(display) < 0 && errno != EAGAIN) {
++        wl_display_cancel_read(display);
++        return -1;
++    }
++    struct pollfd fd = { .fd = wl_display_get_fd(display), .events = POLLIN };
++    int ready = poll(&fd, 1, 0);
++    if (ready > 0 && (fd.revents & POLLIN)) {
++        if (wl_display_read_events(display) < 0) return -1;
++    } else {
++        wl_display_cancel_read(display);
++        if (ready > 0 && (fd.revents & (POLLERR | POLLHUP))) return -1;
++    }
++    return wl_display_dispatch_pending(display);
++}
++
+ int main(int argc, char **argv) {
+     char shader_path[PATH_MAX];
+     char default_shader_path[PATH_MAX];
+@@ -1803,7 +1828,7 @@
+     const double target_frame_seconds = 1.0 / (double)app.target_fps;
+     while (running) {
+         double frame_started = monotonic_seconds();
+-        if (wl_display_dispatch_pending(app.display) < 0) {
++        if (dispatch_wayland_nonblocking(app.display) < 0) {
+             fprintf(stderr, "Wayland dispatch failed\n");
+             break;
+         }
