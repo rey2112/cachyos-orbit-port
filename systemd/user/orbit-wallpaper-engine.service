@@ -11,6 +11,11 @@ ExecStart=%h/.local/bin/orbit-wallpaper-engine
 # authoritative, timeout-bounded control API.
 ExecReload=%h/.local/bin/orbit-wallpaper-control intro
 
+# A restart inside a running session (crash, Wayland disconnect, manual
+# restart) would otherwise stay hidden: replay the intro once the session
+# coordinator reports the desktop interactive. Login still sends its own.
+ExecStartPost=-/usr/bin/sh -c 'grep -qx state=interactive %t/orbit-session-transition/state 2>/dev/null || exit 0; (sleep 2; %h/.local/bin/orbit-wallpaper-control intro) >/dev/null 2>&1 &'
+
 # The EnvironmentFile may override this integration default with an explicit
 # user-selected palette source.
 Environment=ORBIT_WALLPAPER_PALETTE_FILE=%h/.config/hypr/noctalia.lua
