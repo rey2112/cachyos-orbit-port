@@ -7,33 +7,28 @@ uniform sampler2D tex;
 uniform float effect_time;
 uniform vec2 surface_size;
 
+// Orbit focus: a neutral glass sheen sweeps diagonally across the window while
+// the rim lights up and the content settles from a tiny lift. No colour split,
+// no distortion; finishes inside window-shader-events' 0.45 s focus window.
 void main() {
-    // Orbit focus tuning: 1.6x faster playback, half the distortion.
-    float t = effect_time * 1.6;
-    float left = v_texcoord.x;
-    float right = 1.0 - v_texcoord.x;
-    float top = v_texcoord.y;
-    float bottom = 1.0 - v_texcoord.y;
-    float edge_distance = min(min(left, right), min(top, bottom));
-    vec2 direction = left <= min(min(right, top), bottom) ? vec2(1.0, 0.0) :
-        right <= min(min(top, bottom), left) ? vec2(-1.0, 0.0) :
-        top <= bottom ? vec2(0.0, 1.0) : vec2(0.0, -1.0);
-    float size_scale = clamp(1100.0 / max(surface_size.y, 1.0), 0.75, 2.5);
-    float speed = exp(-t * 4.0) * smoothstep(0.7, 0.35, t);
-    float wave_phase = edge_distance * 34.0 - t * 18.0;
-    float front = exp(-pow((edge_distance - t * 0.32) * 10.0, 2.0));
-    float edge_hit = exp(-t * 8.0) * exp(-edge_distance * 70.0);
-    float wave = sin(wave_phase) * front + edge_hit;
-    float envelope = exp(-edge_distance * 2.5) * speed;
-    vec2 offset = direction * wave * envelope * 0.0014 * size_scale;
+    float p = clamp(effect_time / 0.42, 0.0, 1.0);
+    float ease = 1.0 - pow(1.0 - p, 3.0);
+    float fade = 1.0 - ease;
 
-    float chroma = (front + edge_hit) * speed * 0.0007 * size_scale;
-    vec2 red_offset = offset + direction * chroma * 1.2;
-    vec2 blue_offset = offset - direction * chroma;
+    float lift = 0.006 * fade;
+    vec2 uv = (v_texcoord - 0.5) * (1.0 - lift) + 0.5;
+    vec4 colour = texture(tex, uv);
 
-    float red = texture(tex, v_texcoord + red_offset).r;
-    float green = texture(tex, v_texcoord + offset).g;
-    float blue = texture(tex, v_texcoord + blue_offset).b;
-    float alpha = texture(tex, v_texcoord + offset).a;
-    fragColor = vec4(red, green, blue, alpha);
+    float diagonal = (v_texcoord.x + v_texcoord.y) * 0.5;
+    float centre = mix(-0.2, 1.2, ease);
+    float sheen = exp(-pow((diagonal - centre) / 0.09, 2.0));
+
+    vec2 px = v_texcoord * surface_size;
+    float edge = min(min(px.x, surface_size.x - px.x), min(px.y, surface_size.y - px.y));
+    float rim = exp(-edge / 5.0);
+
+    float glow = (sheen * 0.07 + rim * 0.12) * fade;
+    colour.rgb += vec3(glow) * colour.a;
+
+    fragColor = colour;
 }
