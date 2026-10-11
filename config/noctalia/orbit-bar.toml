@@ -41,8 +41,8 @@ radius_bottom_left = 0
 radius_bottom_right = 0
 capsule = false
 start = ["launcher", "workspaces", "active_window"]
-center = ["clock"]
-end = ["media", "tray", "network", "volume", "notifications", "session"]
+center = ["weather", "clock", "media"]
+end = ["cpu", "ram", "tray", "bluetooth", "network", "volume", "notifications", "session"]
 
 # Per-widget colours override the bar foreground, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
@@ -57,6 +57,7 @@ capsule = false
 [widget.media]
 color = "on_surface"
 capsule = false
+hide_album_art = true
 
 [widget.network]
 color = "on_surface"
@@ -71,9 +72,37 @@ color = "on_surface"
 capsule = false
 
 [widget.clock]
-color = "on_surface"
+color = "primary"
 capsule = false
 format = "{:%a %d %b  %H:%M}"
+
+[widget.weather]
+color = "tertiary"
+capsule = false
+show_condition = true
+show_temperature = true
+
+# Two system-monitor instances (named here, typed as sysmon).
+[widget.cpu]
+type = "sysmon"
+stat = "cpu_usage"
+color = "secondary"
+capsule = false
+show_glyph = true
+show_value = true
+
+[widget.ram]
+type = "sysmon"
+stat = "ram_pct"
+color = "secondary"
+capsule = false
+show_glyph = true
+show_value = true
+
+[widget.bluetooth]
+color = "on_surface"
+capsule = false
+hide_when_no_connected_device = true
 
 [widget.session]
 color = "on_surface"
@@ -91,3 +120,8 @@ label_source = "id"
 focused_color = "primary"
 occupied_color = "on_surface"
 empty_color = "outline"
+
+# Weather needs a location: resolved from your IP address. Set
+# auto_locate = false and address = "City" to pin one instead.
+[location]
+auto_locate = true

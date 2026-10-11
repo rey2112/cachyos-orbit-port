@@ -177,14 +177,16 @@ The bar is Noctalia's, not Orbit's. Keep these separate:
   this repo; on CachyOS it starts from `/etc/skel` as `[bar.default]`.
   Edit it here or in Noctalia's settings UI.
 - **Orbit bar look:** `config/noctalia/orbit-bar.toml`, the author's thin
-  full-width `Top` strip, fully see-through, with the full widget set
-  (JetBrains Mono); the dock is the floating island. It sorts
+  full-width `Top` strip, fully see-through, with weather, CPU/RAM, media
+  and status widgets (JetBrains Mono). Weather locates by IP (`[location]`).
+  The dock is the floating island in `90-orbit-glass.toml`. It sorts
   after `config.toml`, so its values win; edit or delete lines freely. Changes
   saved from Noctalia's settings window go to
   `~/.local/state/noctalia/settings.toml` and win over both.
 - **Orbit glue that touches the bar:**
   - `config/noctalia/orbit-shell.toml`: turns off Noctalia's polkit agent
-    (Orbit runs `hyprpolkitagent`).
+    (Orbit runs `hyprpolkitagent`) and its lock screen (Orbit locks with
+    Hyprlock behind its animation), and routes the session menu through Orbit.
   - `config/noctalia/orbit-wallpaper.toml`: turns off Noctalia's wallpaper
     so Orbit's animated one shows.
   - `config/noctalia/90-orbit-glass.toml`: panel/dock/notification

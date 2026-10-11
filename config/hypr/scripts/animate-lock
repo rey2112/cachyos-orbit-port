@@ -1,4 +1,9 @@
 #!/bin/sh
 set -eu
 
-exec loginctl lock-session
+# hypridle turns lock-session into Orbit's animated lock. Without it nothing
+# would answer the request, so start the animated lock directly.
+if systemctl --user is-active --quiet hypridle.service; then
+    exec loginctl lock-session
+fi
+exec "$HOME/.config/hypr/scripts/start-hyprlock"

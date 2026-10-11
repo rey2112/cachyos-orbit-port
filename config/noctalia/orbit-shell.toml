@@ -46,3 +46,9 @@ countdown_seconds = 3.0
 enabled = true
 shortcut = "5"
 variant = "destructive"
+
+# Orbit locks with Hyprlock behind its own animation. Noctalia's lock screen
+# otherwise answers every `loginctl lock-session` (Super+L, idle) first and
+# plays its own transitions instead.
+[lockscreen]
+enabled = false
