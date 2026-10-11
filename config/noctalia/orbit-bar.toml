@@ -92,40 +92,40 @@ end = ["group:info", "group:system"]
 # Per-widget colours override the bar foreground, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
 [widget.launcher]
-color = "primary"
+color = "on_surface_variant"
 capsule = false
 
 [widget.active_window]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 
 [widget.media]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 hide_album_art = true
 
 [widget.network]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 # Icon only: no connection name next to it.
 show_label = false
 show_vpn_label = false
 
 [widget.volume]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 
 [widget.notifications]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 
 [widget.clock]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 format = "{:%a %d %b  %H:%M}"
 
 [widget.weather]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 show_condition = true
 show_temperature = true
@@ -134,7 +134,7 @@ show_temperature = true
 [widget.cpu]
 type = "sysmon"
 stat = "cpu_usage"
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 show_glyph = true
 show_value = true
@@ -142,18 +142,18 @@ show_value = true
 [widget.ram]
 type = "sysmon"
 stat = "ram_pct"
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 show_glyph = true
 show_value = true
 
 [widget.bluetooth]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 hide_when_no_connected_device = true
 
 [widget.session]
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 
 [widget.tray]

@@ -271,6 +271,7 @@ if hl.plugin.hyprglass then
 
     hg.config({
         default_theme = "dark",                                        -- Use dark theme (less bright refraction artifacts).
+        tint_color = 0x9c9aa01a,                                       -- Neutral glass tint; the plugin default is blue-grey.
         default_preset = orbitAppearance.effects.hyprglass_blur_type,  -- Compositor-owned preset.
         -- Liquid glass on Noctalia's layer surfaces too (bar islands, dock,
         -- panels, notifications, OSD, switcher). Fully clear pixels are skipped.
@@ -289,7 +290,7 @@ if hl.plugin.hyprglass then
         specular_strength = 0.9,
         edge_thickness = 0.09,
         lens_distortion = 0.6,
-        tint_color = 0xb4bed214,
+        tint_color = 0xc8c6cc14, -- Neutral grey tint (no blue cast).
         brightness = 1.08,
         contrast = 1.0,
         saturation = 1.15,

@@ -192,7 +192,8 @@ The bar is Noctalia's, not Orbit's. Keep these separate:
   bar islands, dock, panels, notifications, OSD and switcher; native blur is
   the fallback when the plugin is not loaded. The dock
   (launcher first) is in `90-orbit-glass.toml`, the palette in
-  `orbit-colors.toml`. `bin/orbit-apply-look [--reset]` applies all of it. It sorts
+  `orbit-colors.toml` (Orbit-Mono, `palettes/Orbit-Mono.json`: graphite and
+  near-white, no blue or green). `bin/orbit-apply-look [--reset]` applies all of it. It sorts
   after `config.toml`, so its values win; edit or delete lines freely. Changes
   saved from Noctalia's settings window go to
   `~/.local/state/noctalia/settings.toml` and win over both.
