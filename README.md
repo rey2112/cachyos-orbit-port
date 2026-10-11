@@ -18,7 +18,8 @@ The supported reference is Fedora 44 with Wayland and:
 - Noctalia `5.0.0~beta.9-1.fc44`;
 - an x86-64 system for the v0.1 Wallpaper Engine artifact.
 
-An untested CachyOS (Arch) port, which ships the same Hyprland 0.56.2 commit,
+An untested Fedora Asahi Remix (Apple Silicon) variant lives on the `asahi`
+branch; see [`docs/asahi.md`](docs/asahi.md). An untested CachyOS (Arch) port, which ships the same Hyprland 0.56.2 commit,
 is described in [`docs/cachyos.md`](docs/cachyos.md).
 
 Compatibility beyond this reference is not promised. Hyprland plugins use

@@ -35,7 +35,7 @@ fi
 [[ $# -eq 0 ]] || { printf 'usage: %s [--revert]\n' "$0" >&2; exit 2; }
 
 for tool in git make cc pkg-config; do
-    command -v "$tool" >/dev/null || { printf 'error: %s is required (pacman -S base-devel git)\n' "$tool" >&2; exit 1; }
+    command -v "$tool" >/dev/null || { printf 'error: %s is required (Arch: pacman -S base-devel git; Fedora: dnf install gcc make git pkgconf)\n' "$tool" >&2; exit 1; }
 done
 
 rm -rf "$build_dir"

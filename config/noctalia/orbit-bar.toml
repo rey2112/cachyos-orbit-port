@@ -93,7 +93,7 @@ end = ["group:info", "group:system"]
 
     [[bar.Top.capsule_group]]
     id = "system"
-    members = ["tray", "bluetooth", "network", "volume", "notifications", "session"]
+    members = ["tray", "bluetooth", "network", "volume", "brightness", "battery", "notifications", "session"]
     fill = "surface"
     opacity = 0.35
     border = "outline"
@@ -165,6 +165,17 @@ color = "on_surface"
 capsule = false
 show_glyph = true
 show_value = true
+
+# Laptop (asahi branch): screen brightness and battery with its percentage.
+[widget.brightness]
+color = "on_surface"
+capsule = false
+show_label = false
+
+[widget.battery]
+color = "on_surface"
+capsule = false
+show_label = true
 
 [widget.bluetooth]
 color = "on_surface"

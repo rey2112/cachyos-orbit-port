@@ -72,7 +72,7 @@ cd "$repo_dir/config"
 for relative in \
     hypr/hyprland.lua hypr/hypridle.conf hypr/hyprlock.conf \
     hypr/hyprqt6engine.conf hypr/hyprtoolkit.conf hypr/appearance.toml \
-    hypr/scrolloverview.lua; do
+    hypr/scrolloverview.lua hypr/laptop.lua; do
     link_config "$relative"
 done
 for relative in hypr/scripts/* hypr/shaders/* hypr/patches/*; do

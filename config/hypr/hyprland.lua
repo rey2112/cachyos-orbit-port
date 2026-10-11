@@ -687,3 +687,12 @@ hl.layer_rule({
 
 -- For Noctalia Color templates
 require("noctalia").apply_theme()
+
+-- Laptop layer (touchpad, gestures, function keys) only when a battery exists.
+-- Loaded last so its touchpad values win over the hl.config above.
+local batteries = io.popen("grep -lx Battery /sys/class/power_supply/*/type 2>/dev/null")
+if batteries then
+    local found = batteries:read("*l")
+    batteries:close()
+    if found then require("laptop") end
+end

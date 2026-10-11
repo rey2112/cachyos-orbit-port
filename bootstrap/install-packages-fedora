@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Install Orbit's package dependencies on Fedora (including Fedora Asahi
+# Remix on Apple Silicon). Names follow docs/dependencies.md; packages that
+# Fedora's enabled repositories do not provide (Hyprland/Noctalia COPRs,
+# WezTerm, hyprqt6engine, Kora icons) are reported, not guessed. UNTESTED.
+#
+# usage: bootstrap/install-packages-fedora [--dry-run]
+set -euo pipefail
+
+dry_run=false
+case "${1:-}" in
+    --dry-run) dry_run=true ;;
+    "") ;;
+    *) printf 'usage: %s [--dry-run]\n' "$0" >&2; exit 2 ;;
+esac
+
+core_packages=(
+    hyprland hypridle hyprlock hyprpolkitagent noctalia quickshell
+    xdg-desktop-portal xdg-desktop-portal-hyprland nwg-displays
+)
+runtime_packages=(
+    python3 python3-pyudev python3-evdev python3-dbus python3-gobject
+    jq socat util-linux shadow-utils procps-ng grim slurp wl-clipboard zenity
+    libcanberra-gtk3 alsa-utils gsettings-desktop-schemas
+    # Laptop layer (config/hypr/laptop.lua): brightness, media and volume keys.
+    brightnessctl playerctl wireplumber
+)
+appearance_packages=(
+    qt6ct qt6-qtwayland jetbrains-mono-fonts-all adwaita-cursor-theme kitty nautilus
+    wezterm hyprqt6engine kora-icon-theme
+)
+# Plugin builds and the source-built Wallpaper Engine (aarch64 has no
+# prebuilt engine). Hyprland 0.56 links Lua 5.5; check `pkg-config --modversion lua`.
+build_packages=(
+    git gcc-c++ make pkgconf patch cmake meson cpio
+    hyprland-devel pixman-devel libdrm-devel pango-devel cairo-devel libinput-devel
+    systemd-devel wayland-devel wayland-protocols-devel libxkbcommon-devel lua-devel
+    mesa-libEGL-devel mesa-libGLES-devel libpng-devel
+)
+
+packages=("${core_packages[@]}" "${runtime_packages[@]}" "${appearance_packages[@]}" "${build_packages[@]}")
+
+command -v dnf >/dev/null || { printf 'error: dnf not found; this script is for Fedora\n' >&2; exit 1; }
+
+missing=()
+for package in "${packages[@]}"; do
+    rpm -q --whatprovides "$package" >/dev/null 2>&1 || missing+=("$package")
+done
+[[ ${#missing[@]} -gt 0 ]] || { printf 'All packages are already installed.\n'; exit 0; }
+
+unavailable=()
+installable=()
+for package in "${missing[@]}"; do
+    if dnf -q repoquery --whatprovides "$package" 2>/dev/null | grep -q .; then
+        installable+=("$package")
+    else
+        unavailable+=("$package")
+    fi
+done
+
+if [[ ${#installable[@]} -gt 0 ]]; then
+    printf '+ sudo dnf install %s\n' "${installable[*]}"
+    [[ "$dry_run" == true ]] || sudo dnf install -y "${installable[@]}"
+fi
+if [[ ${#unavailable[@]} -gt 0 ]]; then
+    printf '\nNot in your enabled repositories (enable the COPR that provides each, then rerun):\n'
+    printf '  %s\n' "${unavailable[@]}"
+    exit 1
+fi
