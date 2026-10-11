@@ -132,6 +132,13 @@ hl.permission("/usr/(bin|local/bin)/hyprpm", "plugin", "allow")
 
 -- Session lifecycle: startup and shutdown hooks.
 
+-- Workspace rules added through `hyprctl eval` (Home and persistent
+-- workspaces) do not survive a config reload, including the one the startup
+-- sequence below runs after loading plugins. Re-apply them on every reload.
+hl.on("config.reloaded", function()
+    hl.exec_cmd(home .. "/.local/bin/orbit-home-workspaces >/dev/null 2>&1 &")
+end)
+
 hl.on("hyprland.start", function()
     -- Only the explicit new-workspace application allowlist gets automatic
     -- workspace allocation. Ordinary windows are never routed by a daemon.
@@ -660,9 +667,11 @@ hl.layer_rule({
         namespace = "^noctalia-(notification|panel|attached-panel|osd|window-switcher)$",
     },
     no_anim = true,
-    ignore_alpha = 0.5,
-    blur = false,
-    blur_popups = false,
+    -- Frosted glass for every Noctalia surface (panels, notifications, OSD,
+    -- switcher) and the popups they open; fully transparent pixels stay clear.
+    ignore_alpha = 0.1,
+    blur = true,
+    blur_popups = true,
 })
 
 -- Noctalia bar islands and dock: Hyprland blurs only their painted shapes
@@ -672,6 +681,7 @@ hl.layer_rule({
     match = { namespace = "^noctalia-(bar-.+|dock)$" },
     no_anim = true,
     blur = true,
+    blur_popups = true,
     ignore_alpha = 0.1,
 })
 

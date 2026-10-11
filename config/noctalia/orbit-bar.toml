@@ -3,12 +3,10 @@
 # delete a line here to fall back to config.toml. Changes made in Noctalia's
 # settings window (~/.local/state/noctalia/settings.toml) still win over this.
 #
-# The thin full-width strip from the Orbit author's showcase, fully
-# see-through (no background, no blur) and with the full widget set. The bar
+# A clear bar with four frosted-glass islands: launcher and workspaces,
+# clock and media, weather and system stats, tray and status icons. The bar
 # is named Top: Orbit's global menu and session animations address it by
-# that name. The dock below
-# is the floating island. Panels opened from the bar float with their own
-# solid background.
+# that name. The dock below is the floating island.
 
 [shell]
 font_family = "JetBrains Mono"
@@ -24,31 +22,77 @@ open_near_click_session = true
 
 [bar.Top]
 position = "top"
-thickness = 28
+thickness = 34
 scale = 1.0
-font_scale = 0.9
+font_scale = 0.95
 background_opacity = 0.0
 compositor_blur = false
 shadow = false
-margin_edge = 0
-margin_ends = 0
-padding = 10
-widget_spacing = 12
+border_width = 0.0
+margin_edge = 6
+margin_ends = 10
+padding = 0
+widget_spacing = 8
 concave_edge_corners = false
 radius_top_left = 0
 radius_top_right = 0
 radius_bottom_left = 0
 radius_bottom_right = 0
 capsule = false
-border_width = 0.0
-start = ["launcher", "workspaces", "active_window"]
-center = ["clock", "media"]
-end = ["weather", "local/orbit-wallpaper-engine:widget", "cpu", "ram", "tray", "bluetooth", "network", "volume", "notifications", "session"]
+start = ["group:nav"]
+center = ["group:time"]
+end = ["group:info", "group:system"]
+
+    # Frosted-glass islands on a clear bar: Hyprland blurs only the islands
+    # (layer rule in hyprland.lua). Arrays replace config.toml's groups.
+    [[bar.Top.capsule_group]]
+    id = "nav"
+    members = ["launcher", "workspaces"]
+    fill = "surface"
+    opacity = 0.35
+    border = "outline"
+    border_width = 1.0
+    radius = 12.0
+    padding = 10.0
+    widget_spacing = 10
+
+    [[bar.Top.capsule_group]]
+    id = "time"
+    members = ["clock", "media"]
+    fill = "surface"
+    opacity = 0.35
+    border = "outline"
+    border_width = 1.0
+    radius = 12.0
+    padding = 12.0
+    widget_spacing = 12
+
+    [[bar.Top.capsule_group]]
+    id = "info"
+    members = ["weather", "cpu", "ram"]
+    fill = "surface"
+    opacity = 0.35
+    border = "outline"
+    border_width = 1.0
+    radius = 12.0
+    padding = 10.0
+    widget_spacing = 12
+
+    [[bar.Top.capsule_group]]
+    id = "system"
+    members = ["tray", "bluetooth", "network", "volume", "notifications", "session"]
+    fill = "surface"
+    opacity = 0.35
+    border = "outline"
+    border_width = 1.0
+    radius = 12.0
+    padding = 10.0
+    widget_spacing = 10
 
 # Per-widget colours override the bar foreground, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
 [widget.launcher]
-color = "on_surface"
+color = "primary"
 capsule = false
 
 [widget.active_window]
@@ -121,7 +165,7 @@ capsule = false
 style = "regular"
 show_labels = true
 label_source = "id"
-focused_color = "on_surface"
+focused_color = "primary"
 occupied_color = "on_surface_variant"
 empty_color = "outline"
 

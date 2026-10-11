@@ -191,11 +191,12 @@ The bar is Noctalia's, not Orbit's. Keep these separate:
   tables define position, widgets, and layout. It is user-owned and not in
   this repo; on CachyOS it starts from `/etc/skel` as `[bar.default]`.
   Edit it here or in Noctalia's settings UI.
-- **Orbit bar look:** `config/noctalia/orbit-bar.toml`, a transparent
-  full-width `Top` strip with workspaces, weather, CPU/RAM, media and status
-  widgets (JetBrains Mono). The dock (launcher first, then pinned apps) is in
-  `90-orbit-glass.toml`, the palette in `orbit-colors.toml`.
-  `bin/orbit-apply-look [--reset]` applies all of it. It sorts
+- **Orbit bar look:** `config/noctalia/orbit-bar.toml`, a clear `Top` bar
+  with four frosted-glass islands (launcher and workspaces; clock and media;
+  weather, CPU, RAM; tray and status icons), JetBrains Mono. Hyprland blurs
+  every Noctalia layer and its popups (`hyprland.lua` layer rules). The dock
+  (launcher first) is in `90-orbit-glass.toml`, the palette in
+  `orbit-colors.toml`. `bin/orbit-apply-look [--reset]` applies all of it. It sorts
   after `config.toml`, so its values win; edit or delete lines freely. Changes
   saved from Noctalia's settings window go to
   `~/.local/state/noctalia/settings.toml` and win over both.

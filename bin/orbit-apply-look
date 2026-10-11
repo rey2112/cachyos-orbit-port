@@ -35,6 +35,7 @@ noctalia config validate || exit 1
 
 step "Reloading Hyprland"
 hyprctl reload >/dev/null || printf 'warning: hyprctl reload failed\n' >&2
+"$HOME/.local/bin/orbit-home-workspaces" >/dev/null 2>&1 || true
 
 step "Restarting Noctalia"
 pkill -x noctalia; sleep 1; pkill -9 -x noctalia 2>/dev/null
