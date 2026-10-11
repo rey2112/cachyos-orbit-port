@@ -1,14 +1,15 @@
-# Floating island dock, as in the Orbit author's showcase: lifted off the
-# screen edge, rounded on all sides, compact icons, thin outline.
+# Floating liquid-glass dock: lifted off the screen edge, rounded on all
+# sides, compact icons, thin outline. Hyprglass draws the glass.
 [dock]
-background_opacity = 0.4
+background_opacity = 0.25
+shadow = false
 margin_edge = 8
 concave_edge_corners = false
-radius = 14
-radius_top_left = 14
-radius_top_right = 14
-radius_bottom_left = 14
-radius_bottom_right = 14
+radius = 20
+radius_top_left = 20
+radius_top_right = 20
+radius_bottom_left = 20
+radius_bottom_right = 20
 icon_size = 28
 main_axis_padding = 8
 cross_axis_padding = 5
@@ -25,11 +26,13 @@ launcher_position = "start"
 pinned = ["orbit-wallpaper-engine-settings", "firefox", "org.wezfurlong.wezterm", "org.gnome.Nautilus"]
 
 [notification]
-background_opacity = 0.7
+background_opacity = 0.35
 
 [osd]
-background_opacity = 0.7
+background_opacity = 0.35
 
-# Orbit's original glass panels (control centre, launcher, calendar, session).
+# Glass panels (control centre, launcher, calendar, session). Shadows off:
+# Hyprglass would otherwise glass the shadow halo too.
 [shell.panel]
 transparency_mode = "glass"
+shadow = false

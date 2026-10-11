@@ -43,16 +43,16 @@ start = ["group:nav"]
 center = ["group:time"]
 end = ["group:info", "group:system"]
 
-    # Frosted-glass islands on a clear bar: Hyprland blurs only the islands
-    # (layer rule in hyprland.lua). Arrays replace config.toml's groups.
+    # Liquid-glass islands on a clear bar: Hyprglass renders the glass where
+    # the islands paint (hyprland.lua). Arrays replace config.toml's groups.
     [[bar.Top.capsule_group]]
     id = "nav"
     members = ["launcher", "workspaces"]
     fill = "surface"
-    opacity = 0.35
+    opacity = 0.22
     border = "outline"
     border_width = 1.0
-    radius = 12.0
+    radius = 14.0
     padding = 10.0
     widget_spacing = 10
 
@@ -60,10 +60,10 @@ end = ["group:info", "group:system"]
     id = "time"
     members = ["clock", "media"]
     fill = "surface"
-    opacity = 0.35
+    opacity = 0.22
     border = "outline"
     border_width = 1.0
-    radius = 12.0
+    radius = 14.0
     padding = 12.0
     widget_spacing = 12
 
@@ -71,10 +71,10 @@ end = ["group:info", "group:system"]
     id = "info"
     members = ["weather", "cpu", "ram"]
     fill = "surface"
-    opacity = 0.35
+    opacity = 0.22
     border = "outline"
     border_width = 1.0
-    radius = 12.0
+    radius = 14.0
     padding = 10.0
     widget_spacing = 12
 
@@ -82,10 +82,10 @@ end = ["group:info", "group:system"]
     id = "system"
     members = ["tray", "bluetooth", "network", "volume", "notifications", "session"]
     fill = "surface"
-    opacity = 0.35
+    opacity = 0.22
     border = "outline"
     border_width = 1.0
-    radius = 12.0
+    radius = 14.0
     padding = 10.0
     widget_spacing = 10
 
@@ -167,7 +167,8 @@ show_labels = true
 label_source = "id"
 focused_color = "primary"
 occupied_color = "on_surface_variant"
-empty_color = "outline"
+empty_color = "surface_variant"
+change_color_on_hover = true
 
 # Weather needs a location: resolved from your IP address. Set
 # auto_locate = false and address = "City" to pin one instead.

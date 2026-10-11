@@ -6,8 +6,6 @@ ConditionEnvironment=WAYLAND_DISPLAY
 
 [Service]
 Type=simple
-# The end-4 shell runs its own polkit agent; only one can register.
-ExecCondition=/usr/bin/sh -c '! %h/.local/bin/orbit-desktop-shell is ii'
 # The binary lives in the distribution's libexec directory: /usr/libexec on
 # Fedora, below /usr/lib on Arch/CachyOS. Use the first executable candidate.
 ExecStart=/usr/bin/sh -c 'for p in /usr/libexec/hyprpolkitagent /usr/lib/hyprpolkitagent/hyprpolkitagent /usr/lib/hyprpolkitagent; do [ -f "$$p" ] && [ -x "$$p" ] && exec "$$p"; done; echo "hyprpolkitagent binary not found" >&2; exit 1'

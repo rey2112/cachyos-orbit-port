@@ -69,8 +69,7 @@ if [[ "$optional" == true ]]; then
     aur+=("${optional_aur_packages[@]}")
 fi
 
-# Install only what is unsatisfied, honouring provides: end-4's
-# illogical-impulse-quickshell-git provides (and conflicts with) quickshell.
+# Install only what is unsatisfied, honouring provides (pacman -T).
 mapfile -t missing < <(pacman -T "${repo_packages[@]}" || true)
 if [[ ${#missing[@]} -gt 0 ]]; then
     run sudo pacman -S --needed "${missing[@]}"

@@ -16,28 +16,16 @@ send() {
     noctalia msg "$@" >/dev/null 2>&1 || true
 }
 
-# The end-4 shell exposes its bar through Quickshell IPC instead.
-shell_ipc() {
-    printf 'ii-%s-ipc-ms=%s\n' "$1" "$(now_ms)" >&2
-    qs -c ii ipc call bar "$1" >/dev/null 2>&1 || true
-}
-orbit_shell=$("$HOME/.local/bin/orbit-desktop-shell" 2>/dev/null || printf noctalia)
-
 hide() {
-    [[ "$orbit_shell" == ii ]] && { shell_ipc close; return; }
     send bar-hide Top &
     send dock-hide &
     wait
 }
 
 show() {
-    if [[ "$orbit_shell" == ii ]]; then
-        shell_ipc open
-    else
-        send bar-show Top &
-        send dock-show &
-        wait
-    fi
+    send bar-show Top &
+    send dock-show &
+    wait
 
     # Noctalia restores the layer-shell exclusive zones synchronously, but wait
     # for Hyprland to publish the new reserved geometry before returning.

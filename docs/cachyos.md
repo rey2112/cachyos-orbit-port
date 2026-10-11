@@ -177,12 +177,6 @@ wallpaper after every intro), installs it as `~/.local/bin/orbit-wallpaper-engin
 and points the service at it with a systemd drop-in. `--revert` removes the
 drop-in. Compiled here against v0.2.0; untested on NVIDIA hardware.
 
-## end-4 Shell Mode
-
-To use end-4's illogical-impulse shell instead of Noctalia, while keeping
-Orbit's compositor side, wallpaper and lock animation, see
-[`end4-shell.md`](end4-shell.md).
-
 ## Top Bar
 
 The bar is Noctalia's, not Orbit's. Keep these separate:
@@ -193,8 +187,10 @@ The bar is Noctalia's, not Orbit's. Keep these separate:
   Edit it here or in Noctalia's settings UI.
 - **Orbit bar look:** `config/noctalia/orbit-bar.toml`, a clear `Top` bar
   with four frosted-glass islands (launcher and workspaces; clock and media;
-  weather, CPU, RAM; tray and status icons), JetBrains Mono. Hyprland blurs
-  every Noctalia layer and its popups (`hyprland.lua` layer rules). The dock
+  weather, CPU, RAM; tray and status icons), JetBrains Mono. Hyprglass
+  draws Apple-style liquid glass (`liquid` preset in `hyprland.lua`) on the
+  bar islands, dock, panels, notifications, OSD and switcher; native blur is
+  the fallback when the plugin is not loaded. The dock
   (launcher first) is in `90-orbit-glass.toml`, the palette in
   `orbit-colors.toml`. `bin/orbit-apply-look [--reset]` applies all of it. It sorts
   after `config.toml`, so its values win; edit or delete lines freely. Changes

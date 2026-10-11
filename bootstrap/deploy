@@ -72,15 +72,19 @@ cd "$repo_dir/config"
 for relative in \
     hypr/hyprland.lua hypr/hypridle.conf hypr/hyprlock.conf \
     hypr/hyprqt6engine.conf hypr/hyprtoolkit.conf hypr/appearance.toml \
-    hypr/scrolloverview.lua hypr/shells/ii.lua; do
+    hypr/scrolloverview.lua; do
     link_config "$relative"
 done
 for relative in hypr/scripts/* hypr/shaders/* hypr/patches/*; do
     link_config "$relative"
 done
-for relative in matugen/config.toml matugen/templates/orbit/*; do
-    link_config "$relative"
-done
+# fastfetch is optional user configuration: link Orbit's only when the user
+# has none, and say so instead of failing when one already exists.
+if [[ -e "$home_dir/.config/fastfetch/config.jsonc" && ! -L "$home_dir/.config/fastfetch/config.jsonc" ]]; then
+    printf 'keeping your fastfetch config; the Orbit one is %s\n' "$repo_dir/config/fastfetch/config.jsonc"
+else
+    link_config fastfetch/config.jsonc
+fi
 for relative in noctalia/90-orbit-glass.toml noctalia/hooks.toml noctalia/orbit-templates.toml noctalia/orbit-wallpaper.toml \
     noctalia/orbit-bar.toml noctalia/orbit-shell.toml noctalia/orbit-colors.toml \
     noctalia/templates/wallpaper-palette.lua; do
@@ -128,15 +132,10 @@ systemctl --user enable orbit-wallpaper-engine.service workspace-alt-tab-input.s
     workspace-alt-tab-release.service new-workspace-apps.service \
     window-shader-events.service hypridle.service hyprpolkitagent.service
 
-if [[ "$("$repo_dir/bin/orbit-desktop-shell")" == ii ]]; then
-    # end-4 shell: matugen renders the palette files Noctalia would.
-    "$repo_dir/bin/orbit-ii-palette" >/dev/null
-else
-    command -v noctalia >/dev/null 2>&1 || {
-        printf 'Noctalia is required before generated appearance outputs can be refreshed.\n' >&2
-        exit 1
-    }
-    noctalia msg templates-apply >/dev/null
-fi
+command -v noctalia >/dev/null 2>&1 || {
+    printf 'Noctalia is required before generated appearance outputs can be refreshed.\n' >&2
+    exit 1
+}
+noctalia msg templates-apply >/dev/null
 "$home_dir/.local/bin/orbit-update-all-colors" noctalia
 printf 'Orbit source deployment prepared from %s\n' "$repo_dir"

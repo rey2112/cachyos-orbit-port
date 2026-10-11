@@ -58,21 +58,9 @@ def check_session_json():
         json.loads(command("hyprctl", *args))
 
 
-def orbit_shell():
-    try:
-        return command(str(Path.home() / ".local/bin/orbit-desktop-shell"))
-    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
-        return "noctalia"
-
-
 def check_noctalia_and_global_menu():
     require_session()
     processes = current_processes()
-    if orbit_shell() == "ii":
-        shell = [line for line in processes if " -c ii" in line and Path(line.split()[1]).name in {"qs", "quickshell"}]
-        assert len(shell) == 1, shell
-        assert not any(Path(line.split()[1]).name == "noctalia" for line in processes if len(line.split()) > 1)
-        return
     noctalia_name = Path(shutil.which("noctalia") or "noctalia").name
 
     def argv(line):
@@ -108,8 +96,6 @@ def check_services():
         "hypridle.service",
         "hyprpolkitagent.service",
     )
-    if orbit_shell() == "ii":
-        services = services[:-1]  # the end-4 shell owns the polkit agent
     result = subprocess.run(["systemctl", "--user", "is-active", *services], check=False, capture_output=True, text=True, timeout=TIMEOUT)
     assert result.returncode == 0, result.stdout + result.stderr
     assert result.stdout.splitlines() == ["active"] * len(services), result.stdout
