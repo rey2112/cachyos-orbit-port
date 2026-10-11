@@ -462,6 +462,16 @@ hl.window_rule({
     float = true,
 })
 
+-- Floating apps that ask for a tiny window open at least 55% x 60% of the
+-- monitor, centred (size only affects floating windows). Larger requests keep
+-- their size, dialogs are left alone, and the per-app size rules below win.
+hl.window_rule({
+    name = "default-floating-size",
+    match = { class = ".*", modal = false },
+    size = { "max(window_w, monitor_w*0.55)", "max(window_h, monitor_h*0.6)" },
+    center = true,
+})
+
 -- Affinity is launched through XWayland, but remains usable in the normal
 -- tiled layout instead of inheriting the generic floating default.
 hl.window_rule({
