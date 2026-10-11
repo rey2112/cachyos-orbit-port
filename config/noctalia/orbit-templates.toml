@@ -2,9 +2,11 @@
 #   hyprland     -> ~/.config/hypr/noctalia.lua (required by hyprland.lua,
 #                   orbit-theme and the Wallpaper Engine palette)
 #   wezterm      -> ~/.config/wezterm/colors/Noctalia.toml
-#   gtk3/gtk4, qt, kcolorscheme, kitty -> application adapters
+#   gtk3/gtk4, qt, kcolorscheme -> application adapters
+# kitty is excluded: its post-hook rewrites kitty.conf (an Orbit symlink) and
+# Orbit already themes kitty through themes/orbit.conf.
 # Noctalia merges config-dir TOML files in name order and replaces arrays
 # wholesale, so this file sorts after config.toml and lists the full set.
 # Bar and panel layout stay in the user's own config.toml.
 [theme.templates]
-builtin_ids = [ "hyprland", "wezterm", "gtk3", "gtk4", "qt", "kcolorscheme", "kitty", "btop", "alacritty" ]
+builtin_ids = [ "hyprland", "wezterm", "gtk3", "gtk4", "qt", "kcolorscheme", "btop", "alacritty" ]
