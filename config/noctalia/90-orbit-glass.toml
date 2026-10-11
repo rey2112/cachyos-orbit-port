@@ -1,22 +1,24 @@
-# Floating island dock measured from the Orbit author's showcase (1080p):
-# 46px tall, 12px off the bottom edge, near-opaque, launcher grid first.
+# Floating island dock, as in the Orbit author's showcase: lifted off the
+# screen edge, rounded on all sides, compact icons, thin outline.
 [dock]
-background_opacity = 0.85
-margin_edge = 12
+background_opacity = 0.4
+margin_edge = 8
 concave_edge_corners = false
-radius = 16
-radius_top_left = 16
-radius_top_right = 16
-radius_bottom_left = 16
-radius_bottom_right = 16
-icon_size = 32
-main_axis_padding = 10
-cross_axis_padding = 7
-item_spacing = 12
-border_width = 0.0
+radius = 14
+radius_top_left = 14
+radius_top_right = 14
+radius_bottom_left = 14
+radius_bottom_right = 14
+icon_size = 28
+main_axis_padding = 8
+cross_axis_padding = 5
+item_spacing = 5
+border_width = 1.0
 inactive_scale = 1.0
-inactive_opacity = 1.0
+inactive_opacity = 0.9
+magnification_scale = 1.25
 show_dots = true
+# Application launcher button at the start of the dock.
 launcher_position = "start"
 # Orbit Wallpaper Engine settings first. Desktop entry IDs (file name without
 # .desktop). Pins saved from the dock's right-click menu replace this list.

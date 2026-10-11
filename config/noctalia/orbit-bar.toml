@@ -1,17 +1,14 @@
-# Orbit bar look for Noctalia, measured from the Orbit author's showcase video
-# (1080p): a fully transparent 26px strip with a launcher on the left, the
-# time in the middle and status icons on the right, all in a muted foreground.
-# The bar is named Top: Orbit's global menu and session animations address it
-# by that name.
+# Orbit bar look for Noctalia. Edit freely: this file only styles the bar.
+# It sorts after config.toml, so these values win over the same keys there;
+# delete a line here to fall back to config.toml. Changes made in Noctalia's
+# settings window (~/.local/state/noctalia/settings.toml) still win over this.
 #
-# This file sorts after config.toml, so its values win there. Changes saved in
-# Noctalia's settings window (~/.local/state/noctalia/settings.toml) still win
-# over this file.
-
-# CachyOS's config.toml sets ui_scale = 1.20, which makes every bar, panel and
-# font 20% larger than the reference.
-[accessibility]
-ui_scale = 1.0
+# The thin full-width strip from the Orbit author's showcase, fully
+# see-through (no background, no blur) and with the full widget set. The bar
+# is named Top: Orbit's global menu and session animations address it by
+# that name. The dock below
+# is the floating island. Panels opened from the bar float with their own
+# solid background.
 
 [shell]
 font_family = "JetBrains Mono"
@@ -27,60 +24,108 @@ open_near_click_session = true
 
 [bar.Top]
 position = "top"
-thickness = 26
+thickness = 28
 scale = 1.0
-font_scale = 1.0
+font_scale = 0.9
 background_opacity = 0.0
 compositor_blur = false
 shadow = false
-border_width = 0.0
 margin_edge = 0
 margin_ends = 0
-padding = 12
-widget_spacing = 14
+padding = 10
+widget_spacing = 12
 concave_edge_corners = false
 radius_top_left = 0
 radius_top_right = 0
 radius_bottom_left = 0
 radius_bottom_right = 0
 capsule = false
-start = ["launcher"]
-center = ["clock"]
-end = ["local/orbit-wallpaper-engine:widget", "tray", "bluetooth", "network", "volume", "control-center", "session"]
+border_width = 0.0
+start = ["launcher", "workspaces", "active_window"]
+center = ["weather", "clock", "media"]
+end = ["local/orbit-wallpaper-engine:widget", "cpu", "ram", "tray", "bluetooth", "network", "volume", "notifications", "session"]
 
 # Per-widget colours override the bar foreground, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
 [widget.launcher]
-color = "on_surface_variant"
+color = "on_surface"
+capsule = false
+
+[widget.active_window]
+color = "on_surface"
+capsule = false
+
+[widget.media]
+color = "on_surface"
+capsule = false
+hide_album_art = true
+
+[widget.network]
+color = "on_surface"
+capsule = false
+
+[widget.volume]
+color = "on_surface"
+capsule = false
+
+[widget.notifications]
+color = "on_surface"
 capsule = false
 
 [widget.clock]
-color = "on_surface_variant"
+color = "on_surface"
 capsule = false
-format = "{:%H:%M}"
+format = "{:%a %d %b  %H:%M}"
+
+[widget.weather]
+color = "on_surface"
+capsule = false
+show_condition = true
+show_temperature = true
+
+# Two system-monitor instances (named here, typed as sysmon).
+[widget.cpu]
+type = "sysmon"
+stat = "cpu_usage"
+color = "on_surface"
+capsule = false
+show_glyph = true
+show_value = true
+
+[widget.ram]
+type = "sysmon"
+stat = "ram_pct"
+color = "on_surface"
+capsule = false
+show_glyph = true
+show_value = true
+
+[widget.bluetooth]
+color = "on_surface"
+capsule = false
+hide_when_no_connected_device = true
+
+[widget.session]
+color = "on_surface"
+capsule = false
 
 [widget.tray]
 capsule = false
 
-[widget.bluetooth]
-color = "on_surface_variant"
+# Numbered workspaces; Orbit keeps workspaces 1-5 per monitor persistent.
+[widget.workspaces]
 capsule = false
+style = "regular"
+show_labels = true
+label_source = "id"
+focused_color = "on_surface"
+occupied_color = "on_surface_variant"
+empty_color = "outline"
 
-[widget.network]
-color = "on_surface_variant"
-capsule = false
-
-[widget.volume]
-color = "on_surface_variant"
-capsule = false
-
-[widget.control-center]
-color = "on_surface_variant"
-capsule = false
-
-[widget.session]
-color = "on_surface_variant"
-capsule = false
+# Weather needs a location: resolved from your IP address. Set
+# auto_locate = false and address = "City" to pin one instead.
+[location]
+auto_locate = true
 
 # Orbit Wallpaper Engine's bar button (opens its settings), installed by
 # bin/dotfiles-install-wallpaper. Plugins enabled in Noctalia's settings
