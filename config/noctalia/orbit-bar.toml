@@ -117,7 +117,11 @@ color = "on_surface"
 capsule = false
 hide_album_art = true
 hide_when_no_media = true
-max_length = 40
+# Lengths are pixels: the island hugs the title up to max_length, then
+# scrolls the title on hover.
+min_length = 0
+max_length = 360
+title_scroll = "on_hover"
 
 [widget.network]
 color = "on_surface"
