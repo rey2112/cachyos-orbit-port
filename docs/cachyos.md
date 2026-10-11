@@ -171,7 +171,9 @@ up until Hyprland disconnects the engine (`Wayland dispatch failed`; the
 wallpaper disappears). `bin/install-wallpaper-engine-patched` builds the
 upstream v0.2.0 source with
 `config/hypr/patches/orbit-wallpaper-engine-read-wayland-events.patch`, which
-reads events every frame, installs it as `~/.local/bin/orbit-wallpaper-engine-patched`,
+reads events every frame and keeps existing EGL surfaces when an intro
+reconciles outputs (re-creating one fails on NVIDIA and froze the
+wallpaper after every intro), installs it as `~/.local/bin/orbit-wallpaper-engine-patched`,
 and points the service at it with a systemd drop-in. `--revert` removes the
 drop-in. Compiled here against v0.2.0; untested on NVIDIA hardware.
 

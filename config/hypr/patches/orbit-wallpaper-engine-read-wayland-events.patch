@@ -8,7 +8,29 @@
  #include <sys/stat.h>
  #include <time.h>
  #include <unistd.h>
-@@ -1554,6 +1555,30 @@
+@@ -1312,10 +1313,20 @@
+         struct output *item = &app->outputs[i];
+         if (!item->active || !item->enabled) continue;
+         if (!item->configured || !item->width || !item->height) continue;
++        // Keep surfaces that already have an EGL window. Creating a second
++        // one for the same wl_surface fails on NVIDIA, which dropped the only
++        // surface and froze the wallpaper after every intro.
++        if (item->egl_surface != EGL_NO_SURFACE) continue;
+         item->egl_window = wl_egl_window_create(item->surface, item->width, item->height);
+         item->egl_surface = eglCreateWindowSurface(app->egl_display, app->egl_config,
+                                                     (EGLNativeWindowType)item->egl_window, NULL);
+-        if (item->egl_surface == EGL_NO_SURFACE) return false;
++        if (item->egl_surface == EGL_NO_SURFACE) {
++            fprintf(stderr, "could not create EGL surface for %s (0x%x)\n",
++                    item->name[0] ? item->name : "(unnamed)", eglGetError());
++            wl_egl_window_destroy(item->egl_window);
++            item->egl_window = NULL;
++            return false;
++        }
+         fprintf(stderr, "layer surface ready: %s %dx%d at %d,%d\n",
+                 item->name[0] ? item->name : "(unnamed)",
+                 item->width, item->height, item->x, item->y);
+@@ -1554,6 +1565,30 @@
      eglMakeCurrent(app->egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
  }
  
@@ -39,7 +61,7 @@
  int main(int argc, char **argv) {
      char shader_path[PATH_MAX];
      char default_shader_path[PATH_MAX];
-@@ -1803,7 +1828,7 @@
+@@ -1803,7 +1838,7 @@
      const double target_frame_seconds = 1.0 / (double)app.target_fps;
      while (running) {
          double frame_started = monotonic_seconds();

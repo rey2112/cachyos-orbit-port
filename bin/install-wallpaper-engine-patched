@@ -8,6 +8,8 @@
 # The patch makes the render loop read compositor events itself. Without it,
 # on NVIDIA (and whenever the wallpaper is hidden) events are never read, and
 # Hyprland eventually disconnects the engine ("Wayland dispatch failed").
+# It also stops every intro from re-creating the EGL surface of an output that
+# already has one, which fails on NVIDIA and leaves a frozen wallpaper.
 set -euo pipefail
 
 repo_url="${ORBIT_WALLPAPER_REPO_URL:-https://github.com/CleanShirtUK/orbit-wallpaper-engine.git}"
