@@ -398,16 +398,12 @@ hl.animation({ leaf = "zoomFactor", enabled = true, speed = 7, bezier = "quick" 
 -- Application launchers
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))              -- Open terminal (wezterm).
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))           -- Open file manager (nautilus).
-hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(chatGPT))               -- Open ChatGPT.
-hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(openCode))              -- Open OpenCode in a dedicated terminal.
-hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(dailyNote))             -- Open today's Obsidian daily note.
-hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd(scratchpad))     -- Open the permanent Obsidian scratchpad.
 hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(launcher))          -- Open the Noctalia launcher.
 hl.bind("ALT + TAB", hl.dsp.exec_cmd(workspaceAltTab .. " cycle")) -- Workspace-oriented ScrollOverview switcher.
 
 -- Window management
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd(workspaceAltTab .. " close"))                 -- Close ScrollOverview if open.
-hl.bind(mainMod .. " + C", hl.dsp.window.close())                                             -- Close active window.
+hl.bind(mainMod .. " + W", hl.dsp.window.close())                                             -- Close active window.
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))                        -- Toggle float/tile for active window.
 hl.bind("ALT + Return", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })) -- Toggle fullscreen.
 
@@ -416,18 +412,20 @@ hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(animateLock))     -- Lock screen with
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(animateShutdown)) -- Shutdown session with animation.
 
 -- Screenshots and recording
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd([[grim -g "$(slurp)" - | wl-copy --type image/png]])) -- Screenshot (select region, copy to clipboard).
+-- Screenshot (select region, copy to clipboard). Super+Shift+S moves windows down, so it lives on Print and Super+Shift+X.
+for _, key in ipairs({ "Print", mainMod .. " + SHIFT + X" }) do
+    hl.bind(key, hl.dsp.exec_cmd([[grim -g "$(slurp)" - | wl-copy --type image/png]]))
+end
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd(gpuScreenRecorder .. " record"))                      -- Start GPU screen recording.
 hl.bind(mainMod .. " + SHIFT + Z", hl.dsp.exec_cmd(gpuScreenRecorder .. " replay"))                      -- Save instant replay (last 30s).
 
--- System monitoring
-hl.bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("flatpak run io.missioncenter.MissionCenter")) -- Open Mission Center (system monitor).
-
 -- Placement diagnostics
 
--- Directional focus shares monitor geometry with Super+Shift+Arrow movement.
-for key, direction in pairs({ left = "l", right = "r", up = "u", down = "d" }) do
-    hl.bind(mainMod .. " + " .. key, hl.dsp.exec_cmd(focusDirectional .. " " .. direction))
+-- Directions use WASD instead of the arrow keys. Super+W closes windows, so
+-- focus is Super+Alt+WASD; it shares monitor geometry with Super+Shift+WASD movement.
+local wasd = { A = "l", D = "r", W = "u", S = "d" }
+for key, direction in pairs(wasd) do
+    hl.bind(mainMod .. " + ALT + " .. key, hl.dsp.exec_cmd(focusDirectional .. " " .. direction))
 end
 
 -- Scroll wheel on window also focuses vertically (when mouse is over the window).
@@ -436,19 +434,19 @@ for key, direction in pairs({ mouse_up = "u", mouse_down = "d" }) do
 end
 
 -- One directional dispatcher handles intra-workspace movement, monitor edges,
--- and workspace-hierarchy edges for all four arrows.
-for key, direction in pairs({ left = "l", right = "r", up = "u", down = "d" }) do
+-- and workspace-hierarchy edges for all four directions.
+for key, direction in pairs(wasd) do
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.exec_cmd(moveWindowWorkspace .. " " .. direction),
         { repeating = true })
 end
 
--- Resize active window: SUPER + CTRL + arrow keys. Repeating = hold to continuously resize.
+-- Resize active window: SUPER + CTRL + WASD. Repeating = hold to continuously resize.
 -- Delta values: ±40 pixels per key press (relative resizing).
 for key, delta in pairs({
-    left = { x = -40, y = 0 }, -- Shrink width.
-    right = { x = 40, y = 0 }, -- Grow width.
-    up = { x = 0, y = -40 },   -- Shrink height.
-    down = { x = 0, y = 40 },  -- Grow height.
+    A = { x = -40, y = 0 }, -- Shrink width.
+    D = { x = 40, y = 0 },  -- Grow width.
+    W = { x = 0, y = -40 }, -- Shrink height.
+    S = { x = 0, y = 40 },  -- Grow height.
 }) do
     hl.bind(mainMod .. " + CTRL + " .. key, hl.dsp.window.resize({ x = delta.x, y = delta.y, relative = true }),
         { repeating = true })
