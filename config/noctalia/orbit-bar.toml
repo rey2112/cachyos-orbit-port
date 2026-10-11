@@ -3,9 +3,10 @@
 # delete a line here to fall back to config.toml. Changes made in Noctalia's
 # settings window (~/.local/state/noctalia/settings.toml) still win over this.
 #
-# The thin full-width strip from the Orbit author's showcase, kept see-through
-# (blurred glass) and with the full widget set. The bar is named Top: Orbit's
-# global menu and session animations address it by that name. The dock below
+# The thin full-width strip from the Orbit author's showcase, fully
+# see-through (no background, no blur) and with the full widget set. The bar
+# is named Top: Orbit's global menu and session animations address it by
+# that name. The dock below
 # is the floating island. Panels opened from the bar float with their own
 # solid background.
 
@@ -26,8 +27,8 @@ position = "top"
 thickness = 28
 scale = 1.0
 font_scale = 0.9
-background_opacity = 0.3
-compositor_blur = true
+background_opacity = 0.0
+compositor_blur = false
 shadow = false
 margin_edge = 0
 margin_ends = 0

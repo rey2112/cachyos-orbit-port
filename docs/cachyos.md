@@ -177,7 +177,7 @@ The bar is Noctalia's, not Orbit's. Keep these separate:
   this repo; on CachyOS it starts from `/etc/skel` as `[bar.default]`.
   Edit it here or in Noctalia's settings UI.
 - **Orbit bar look:** `config/noctalia/orbit-bar.toml`, the author's thin
-  full-width `Top` strip as blurred glass with the full widget set
+  full-width `Top` strip, fully see-through, with the full widget set
   (JetBrains Mono); the dock is the floating island. It sorts
   after `config.toml`, so its values win; edit or delete lines freely. Changes
   saved from Noctalia's settings window go to
