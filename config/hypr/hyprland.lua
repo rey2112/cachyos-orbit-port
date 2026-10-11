@@ -311,7 +311,7 @@ hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })        
 hl.curve("almostLinear", { type = "bezier", points = { { 0.5, 0.5 }, { 0.75, 1 } } })        -- Nearly constant, slight ease-in.
 hl.curve("quick", { type = "bezier", points = { { 0.15, 0 }, { 0.1, 1 } } })                 -- Very fast (sharp acceleration).
 hl.curve("easy", { type = "spring", mass = 1, stiffness = 71.2633, dampening = 15.8273644 }) -- Springy, bouncy motion.
-hl.curve("orbitTunedB", { type = "spring", mass = 1, stiffness = 360, dampening = 22 })         -- Tuned motion/workspace spring.
+hl.curve("orbitTunedB", { type = "spring", mass = 1, stiffness = 360, dampening = 38 })         -- Tuned motion/workspace spring, critically damped (no overshoot).
 
 -- Global animation timing (affects all animation speed multipliers).
 hl.animation({ leaf = "global", enabled = orbitAppearance.effects.animations.global.enabled, speed = orbitAppearance

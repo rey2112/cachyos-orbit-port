@@ -25,12 +25,11 @@ launcher_position = "start"
 pinned = ["orbit-wallpaper-engine-settings", "firefox", "org.wezfurlong.wezterm", "org.gnome.Nautilus"]
 
 [notification]
-background_opacity = 0.9
+background_opacity = 0.7
 
 [osd]
-background_opacity = 0.85
+background_opacity = 0.7
 
-# Pop-up panels (control centre, launcher, calendar, session) stay solid so
-# they are readable over the transparent bar and the animated wallpaper.
+# Orbit's original glass panels (control centre, launcher, calendar, session).
 [shell.panel]
-transparency_mode = "solid"
+transparency_mode = "glass"
