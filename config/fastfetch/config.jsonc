@@ -13,7 +13,7 @@
     "separator": "",
     "color": { "keys": "90", "title": "white", "output": "white", "separator": "90" },
     "key": { "width": 10 },
-    "bar": { "charElapsed": "━", "charTotal": "─", "borderLeft": "", "borderRight": "", "width": 12 },
+    "bar": { "char": { "elapsed": "━", "total": "─" }, "border": { "left": "", "right": "" }, "width": 12 },
     "percent": { "type": 3, "color": { "green": "white", "yellow": "white", "red": "red" } }
   },
   "modules": [
