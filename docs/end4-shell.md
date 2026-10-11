@@ -24,9 +24,11 @@ Then log out and back in. The installer:
 
 1. Clones end-4 at the pinned commit `2f2a376` into `~/.cache/orbit-end4/`.
 2. Runs end-4's `./setup install --skip-allfiles --skip-sysupdate --skip-plasmaintg`
-   for dependencies, its Python venv, and system setup. This replaces Arch's
-   `quickshell` with end-4's pinned `illogical-impulse-quickshell-git`;
-   accept the pacman conflict prompt. Orbit's global menu still works with it.
+   for dependencies, its Python venv, and system setup. end-4 installs with
+   `--noconfirm`, which aborts on package conflicts, so the installer first
+   removes Arch's `quickshell` and `adw-gtk-theme` (`pacman -Rdd`). end-4's
+   `illogical-impulse-quickshell-git` and `adw-gtk-theme-git` provide both.
+   Orbit's global menu works with end-4's Quickshell.
 3. Copies `quickshell/ii` and the matugen templates. Anything replaced goes to
    `~/orbit-backup-end4-<timestamp>/`. Orbit's links are never deleted.
 4. Clears end-4's image wallpaper, so Orbit's animated wallpaper shows.

@@ -48,6 +48,15 @@ git -C "$source_dir" checkout --quiet --detach "$repo_commit"
 if [[ "$skip_deps" == false ]]; then
     # Dependencies (illogical-impulse-* packages, including its pinned
     # quickshell-git, which replaces Arch's quickshell), Python venv, groups.
+    # end-4 installs with --noconfirm, which declines conflict removals and
+    # aborts. Remove the two conflicting packages its replacements provide.
+    for pair in quickshell:illogical-impulse-quickshell-git adw-gtk-theme:adw-gtk-theme-git; do
+        old=${pair%%:*} new=${pair#*:}
+        if pacman -Qq "$old" >/dev/null 2>&1 && ! pacman -Qq "$new" >/dev/null 2>&1; then
+            printf 'Removing %s; end-4 replaces it with %s\n' "$old" "$new"
+            sudo pacman -Rdd --noconfirm "$old"
+        fi
+    done
     (cd "$source_dir" && ./setup install --skip-allfiles --skip-sysupdate --skip-plasmaintg)
 fi
 

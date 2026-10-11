@@ -69,7 +69,14 @@ if [[ "$optional" == true ]]; then
     aur+=("${optional_aur_packages[@]}")
 fi
 
-run sudo pacman -S --needed "${repo_packages[@]}"
+# Install only what is unsatisfied, honouring provides: end-4's
+# illogical-impulse-quickshell-git provides (and conflicts with) quickshell.
+mapfile -t missing < <(pacman -T "${repo_packages[@]}" || true)
+if [[ ${#missing[@]} -gt 0 ]]; then
+    run sudo pacman -S --needed "${missing[@]}"
+else
+    printf 'All repo packages are already satisfied.\n'
+fi
 
 if ! command -v paru >/dev/null; then
     # CachyOS ships paru in its repositories; plain Arch users install it from the AUR.
