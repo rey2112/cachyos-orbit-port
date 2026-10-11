@@ -47,7 +47,7 @@ local dynamicCursorsPlugin = home .. "/.local/share/hyprland/plugins/dynamic-cur
 -- configuration inputs.
 local orbitAppearance = {
     shape = { corner_radius = 11, window_radius = 11 },
-    transparency = { compositor = { active_opacity = 1.0, inactive_opacity = 0.95 } },
+    transparency = { compositor = { active_opacity = 0.97, inactive_opacity = 0.88 } },
     effects = {
         hyprglass_enabled = true,
         hyprglass_blur_type = "glass",
@@ -592,7 +592,7 @@ suppressMaximizeRule:set_enabled(false) -- Disabled: let maximize work normally.
 hl.layer_rule({
     name = "noctalia",
     match = {
-        namespace = "^noctalia-(bar-.+|notification|panel|osd|window-switcher)$",
+        namespace = "^noctalia-(notification|panel|osd|window-switcher)$",
     },
     no_anim = true,   -- Disable animations for fallback UI (lighter rendering = better fallback experience).
     ignore_alpha = 0.5, -- Ignore alpha < 0.5 (fade out effect without full animation opacity change).
@@ -647,12 +647,22 @@ hl.window_rule({
 hl.layer_rule({
     name = "noctalia",
     match = {
-        namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$",
+        namespace = "^noctalia-(notification|panel|attached-panel|osd|window-switcher)$",
     },
     no_anim = true,
     ignore_alpha = 0.5,
     blur = false,
     blur_popups = false,
+})
+
+-- Noctalia bar islands and dock: Hyprland blurs only their painted shapes
+-- (the bar itself is transparent), giving frosted-glass capsules.
+hl.layer_rule({
+    name = "noctalia-glass-islands",
+    match = { namespace = "^noctalia-(bar-.+|dock)$" },
+    no_anim = true,
+    blur = true,
+    ignore_alpha = 0.1,
 })
 
 -- end-4 shell keybinds and layer rules.

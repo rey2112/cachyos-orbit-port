@@ -82,7 +82,7 @@ for relative in matugen/config.toml matugen/templates/orbit/*; do
     link_config "$relative"
 done
 for relative in noctalia/90-orbit-glass.toml noctalia/hooks.toml noctalia/orbit-templates.toml noctalia/orbit-wallpaper.toml \
-    noctalia/orbit-bar.toml noctalia/orbit-shell.toml \
+    noctalia/orbit-bar.toml noctalia/orbit-shell.toml noctalia/orbit-colors.toml \
     noctalia/templates/wallpaper-palette.lua; do
     link_config "$relative"
 done

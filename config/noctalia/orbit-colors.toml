@@ -1,0 +1,10 @@
+# One palette for everything. Noctalia's palette drives the bar, GTK/Qt,
+# terminals, Hyprland borders, Hyprlock and (through the colors_changed hook)
+# the Orbit Wallpaper Engine. Noctalia's own wallpaper is disabled, so a
+# builtin palette replaces source = "wallpaper". Change `builtin` to taste:
+# Ayu | Catppuccin | Dracula | Eldritch | Gruvbox | Kanagawa | Noctalia |
+# Nord | Rosé Pine | Tokyo-Night
+[theme]
+mode = "dark"
+source = "builtin"
+builtin = "Tokyo-Night"
