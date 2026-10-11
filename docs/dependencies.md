@@ -22,7 +22,7 @@ names are mapped in [`cachyos.md`](cachyos.md) and installed by
 - the HyprQt6 Engine Qt platform theme (`QT_QPA_PLATFORMTHEME=hyprqt6engine`).
 
 These provide the commands used by the core launchers and user services,
-including `systemctl`, `hyprctl`, `flock`, `sg`, `ps`, `wl-copy`, and
+including `systemctl`, `hyprctl`, `flock`, `ps`, `wl-copy`, and
 `canberra-gtk-play`.
 
 ## Required External Projects

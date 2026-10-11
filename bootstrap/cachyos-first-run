@@ -111,7 +111,7 @@ report_polkit_agent_path() {
 }
 
 ensure_input_group() {
-    # workspace-alt-tab-input.service runs `sg input` to read Alt key state.
+    # workspace-alt-tab-input.service reads input devices; it needs the input group.
     id -nG "$USER" | tr ' ' '\n' | grep -qx input && { printf '%s is in group input\n' "$USER"; return 0; }
     sudo gpasswd -a "$USER" input && printf 'added %s to group input; log out and back in for it to apply\n' "$USER"
 }
@@ -254,7 +254,7 @@ if [[ "${step_status[0]}" == FAIL ]]; then
 fi
 step install-packages 'see pacman/paru output in the log' install_packages
 step polkit-agent-path 'hyprpolkitagent not installed or binary path unexpected' report_polkit_agent_path
-step input-group 'sg input needs group membership for Alt+Tab' ensure_input_group
+step input-group 'input group membership needed for Alt+Tab' ensure_input_group
 step backup-config 'tar failed; check free space' backup_config
 step migrate-dry-run 'blocked destinations; resolved in the next step' migrate_dry_run
 step seed-monitors 'could not write placeholder' seed_monitor_layout

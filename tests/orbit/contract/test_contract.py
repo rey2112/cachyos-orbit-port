@@ -118,7 +118,7 @@ class CurrentArchitectureTests(unittest.TestCase):
 
         expected_exec = {
             "orbit-wallpaper-engine.service": "%h/.local/bin/orbit-wallpaper-engine",
-            "workspace-alt-tab-input.service": "/usr/bin/sg input -c %h/.local/bin/orbit-input-state",
+            "workspace-alt-tab-input.service": "%h/.local/bin/orbit-input-state",
             "workspace-alt-tab-release.service": "%h/.local/bin/workspace-alt-tab-release",
             "new-workspace-apps.service": "%h/.config/hypr/scripts/new-workspace-apps",
             "window-shader-events.service": "%h/.config/hypr/scripts/window-shader-events",

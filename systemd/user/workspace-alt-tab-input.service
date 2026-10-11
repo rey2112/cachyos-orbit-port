@@ -3,7 +3,9 @@ Description=Alt key state for workspace-oriented Alt-Tab
 PartOf=hyprland-session.target
 
 [Service]
-ExecStart=/usr/bin/sg input -c %h/.local/bin/orbit-input-state
+# Requires login membership in the input group. Run directly: Arch/CachyOS
+# shadow does not ship sg, and sg adds nothing once the group is in the login.
+ExecStart=%h/.local/bin/orbit-input-state
 RuntimeDirectory=orbit
 RuntimeDirectoryMode=0700
 Restart=on-failure
