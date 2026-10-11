@@ -47,7 +47,7 @@ local dynamicCursorsPlugin = home .. "/.local/share/hyprland/plugins/dynamic-cur
 -- configuration inputs.
 local orbitAppearance = {
     shape = { corner_radius = 11, window_radius = 11 },
-    transparency = { compositor = { active_opacity = 0.97, inactive_opacity = 0.88 } },
+    transparency = { compositor = { active_opacity = 1.0, inactive_opacity = 0.95 } },
     effects = {
         hyprglass_enabled = true,
         hyprglass_blur_type = "glass",

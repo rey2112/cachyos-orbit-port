@@ -33,10 +33,5 @@ for index in "${!monitors[@]}"; do
         printf '%s\t%s\tdefault=true\tpersistent=true\n' "$monitor" "$workspace"
     else
         hyprctl eval "hl.workspace_rule({ workspace = \"$workspace\", monitor = \"$monitor\", default = true, persistent = true })" >/dev/null
-        # Keep the rest of the monitor's five-workspace block alive so the bar
-        # always shows it. Not default, so these are never mistaken for Home.
-        for ((extra = 1; extra < ${ORBIT_PERSISTENT_WORKSPACES:-5} && extra < 5; extra++)); do
-            hyprctl eval "hl.workspace_rule({ workspace = \"$((workspace + extra))\", monitor = \"$monitor\", persistent = true })" >/dev/null
-        done
     fi
 done

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Apply Orbit's reference look in one step and restart what shows it.
+#
+#   orbit-apply-look            keep Noctalia settings-window overrides
+#   orbit-apply-look --reset    also move them aside (backed up), so only
+#                               Orbit's config files decide the look
+#
+# Steps: deploy the repo (which regenerates colours and fonts), reload Hyprland, restart
+# Noctalia, and bring the bar, dock and wallpaper back up.
+set -uo pipefail
+
+orbit_dir=$(CDPATH= cd -- "$(dirname -- "$(readlink -f -- "$0")")/.." && pwd)
+state="${XDG_STATE_HOME:-$HOME/.local/state}/noctalia/settings.toml"
+reset=false
+case "${1:-}" in
+    --reset) reset=true ;;
+    '') ;;
+    *) printf 'usage: %s [--reset]\n' "$0" >&2; exit 2 ;;
+esac
+
+step() { printf '\n==> %s\n' "$*"; }
+
+if [[ "$reset" == true && -f "$state" ]]; then
+    backup="$HOME/orbit-backup-$(date +%Y%m%dT%H%M%S)/noctalia-settings.toml"
+    mkdir -p "${backup%/*}"
+    mv -- "$state" "$backup"
+    step "Moved Noctalia settings-window overrides to $backup"
+fi
+
+step "Deploying $orbit_dir"
+"$orbit_dir/bootstrap/deploy" || exit 1
+
+step "Checking Noctalia config"
+noctalia config validate || exit 1
+
+step "Reloading Hyprland"
+hyprctl reload >/dev/null || printf 'warning: hyprctl reload failed\n' >&2
+
+step "Restarting Noctalia"
+pkill -x noctalia; sleep 1; pkill -9 -x noctalia 2>/dev/null
+setsid -f sh -c 'noctalia > "$HOME/noctalia.log" 2>&1'
+for _ in $(seq 1 50); do noctalia msg status >/dev/null 2>&1 && break; sleep 0.1; done
+"$HOME/.local/bin/orbit-noctalia-session-chrome" show || true
+
+step "Restarting the wallpaper"
+systemctl --user daemon-reload
+systemctl --user restart orbit-wallpaper-engine.service
+sleep 3
+"$HOME/.local/bin/orbit-wallpaper-control" intro >/dev/null 2>&1 || true
+
+step "Done"
+printf 'Noctalia log: ~/noctalia.log\n'
