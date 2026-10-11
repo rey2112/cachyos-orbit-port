@@ -3,11 +3,11 @@
 # delete a line here to fall back to config.toml. Changes made in Noctalia's
 # settings window (~/.local/state/noctalia/settings.toml) still win over this.
 #
-# Matches the bar in the Orbit author's showcase: one thin, dark, full-width
-# strip named Top (Orbit's global menu and session animations address the bar
-# by that name) with the launcher, a centred clock, and status icons. The dock
-# below it is the floating island. Panels opened from the bar float with their
-# own solid background.
+# Floating glass islands on a fully transparent bar named Top (Orbit's global
+# menu and session animations address the bar by that name). Hyprland blurs
+# only the islands (hyprland.lua layer rule, ignore_alpha). Panels opened from
+# the bar float with their own solid background instead of attaching to the
+# transparent bar.
 
 [shell]
 font_family = "JetBrains Mono"
@@ -23,54 +23,103 @@ open_near_click_session = true
 
 [bar.Top]
 position = "top"
-thickness = 26
+thickness = 36
 scale = 1.0
-font_scale = 0.9
-background_opacity = 0.92
-compositor_blur = true
+font_scale = 1.0
+background_opacity = 0.0
+compositor_blur = false
 shadow = false
-margin_edge = 0
-margin_ends = 0
-padding = 8
-widget_spacing = 10
+margin_edge = 6
+margin_ends = 10
+padding = 0
+widget_spacing = 8
 concave_edge_corners = false
 radius_top_left = 0
 radius_top_right = 0
 radius_bottom_left = 0
 radius_bottom_right = 0
 capsule = false
-start = ["launcher"]
-center = ["clock"]
-end = ["tray", "network", "volume", "notifications", "session"]
-# Arrays replace config.toml's wholesale: no capsule islands on this bar.
-capsule_group = []
+start = ["group:app"]
+center = ["group:spaces"]
+end = ["group:status", "group:time"]
 
-# Per-widget colours override the bar foreground, and CachyOS's config.toml
+    [[bar.Top.capsule_group]]
+    id = "app"
+    members = ["launcher", "active_window"]
+    fill = "surface"
+    opacity = 0.4
+    border = "outline"
+    border_width = 1.0
+    radius = 13.0
+    padding = 10.0
+    widget_spacing = 8
+
+    [[bar.Top.capsule_group]]
+    id = "spaces"
+    members = ["workspaces"]
+    fill = "surface"
+    opacity = 0.4
+    border = "outline"
+    border_width = 1.0
+    radius = 13.0
+    padding = 10.0
+
+    [[bar.Top.capsule_group]]
+    id = "status"
+    members = ["tray", "media", "network", "volume", "notifications"]
+    fill = "surface"
+    opacity = 0.4
+    border = "outline"
+    border_width = 1.0
+    radius = 13.0
+    padding = 10.0
+    widget_spacing = 10
+
+    [[bar.Top.capsule_group]]
+    id = "time"
+    members = ["clock", "session"]
+    fill = "primary"
+    opacity = 0.85
+    radius = 13.0
+    padding = 12.0
+    widget_spacing = 10
+
+# Per-widget colours override group foregrounds, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
 [widget.launcher]
+color = "primary"
+
+[widget.active_window]
 color = "on_surface"
-capsule = false
 
 [widget.network]
 color = "on_surface"
-capsule = false
 
 [widget.volume]
 color = "on_surface"
-capsule = false
 
 [widget.notifications]
 color = "on_surface"
-capsule = false
+
+[widget.media]
+color = "on_surface"
 
 [widget.clock]
-color = "on_surface"
-capsule = false
-format = "{:%H:%M}"
+color = "on_primary"
+format = "{:%a %d %b  %H:%M}"
 
 [widget.session]
-color = "on_surface"
-capsule = false
+color = "on_primary"
 
 [widget.tray]
 capsule = false
+
+# Numbered pills; Orbit keeps workspaces 1-5 per monitor persistent.
+[widget.workspaces]
+capsule = false
+style = "regular"
+show_labels = true
+label_source = "id"
+focused_color = "primary"
+occupied_color = "on_surface"
+empty_color = "outline"
