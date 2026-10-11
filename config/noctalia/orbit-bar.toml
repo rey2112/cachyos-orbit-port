@@ -40,14 +40,15 @@ radius_top_right = 0
 radius_bottom_left = 0
 radius_bottom_right = 0
 capsule = false
+border_width = 0.0
 start = ["launcher", "workspaces", "active_window"]
 center = ["weather", "clock", "media"]
-end = ["cpu", "ram", "tray", "bluetooth", "network", "volume", "notifications", "session"]
+end = ["local/orbit-wallpaper-engine:widget", "cpu", "ram", "tray", "bluetooth", "network", "volume", "notifications", "session"]
 
 # Per-widget colours override the bar foreground, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
 [widget.launcher]
-color = "primary"
+color = "on_surface"
 capsule = false
 
 [widget.active_window]
@@ -72,12 +73,12 @@ color = "on_surface"
 capsule = false
 
 [widget.clock]
-color = "primary"
+color = "on_surface"
 capsule = false
 format = "{:%a %d %b  %H:%M}"
 
 [widget.weather]
-color = "tertiary"
+color = "on_surface"
 capsule = false
 show_condition = true
 show_temperature = true
@@ -86,7 +87,7 @@ show_temperature = true
 [widget.cpu]
 type = "sysmon"
 stat = "cpu_usage"
-color = "secondary"
+color = "on_surface"
 capsule = false
 show_glyph = true
 show_value = true
@@ -94,7 +95,7 @@ show_value = true
 [widget.ram]
 type = "sysmon"
 stat = "ram_pct"
-color = "secondary"
+color = "on_surface"
 capsule = false
 show_glyph = true
 show_value = true
@@ -117,11 +118,17 @@ capsule = false
 style = "regular"
 show_labels = true
 label_source = "id"
-focused_color = "primary"
-occupied_color = "on_surface"
+focused_color = "on_surface"
+occupied_color = "on_surface_variant"
 empty_color = "outline"
 
 # Weather needs a location: resolved from your IP address. Set
 # auto_locate = false and address = "City" to pin one instead.
 [location]
 auto_locate = true
+
+# Orbit Wallpaper Engine's bar button (opens its settings), installed by
+# bin/dotfiles-install-wallpaper. Plugins enabled in Noctalia's settings
+# window replace this list.
+[plugins]
+enabled = ["local/orbit-wallpaper-engine"]

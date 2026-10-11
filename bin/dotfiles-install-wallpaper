@@ -25,6 +25,13 @@ install_noctalia_integration() {
     }
     install_external_file "$repo_dir/tools/orbit-wallpaper-settings" \
         "$HOME/.local/bin/orbit-wallpaper-settings" 0755
+    # The settings launcher above opens these Quickshell files; without them it
+    # exits with "settings UI is not installed" and no window appears.
+    local qml
+    for qml in WallpaperSettings.qml StandaloneSettings.qml; do
+        install_external_file "$repo_dir/settings/$qml" \
+            "${XDG_DATA_HOME:-$HOME/.local/share}/orbit-wallpaper-engine/settings/$qml" 0644
+    done
     install_external_file "$plugin_source/plugin.toml" \
         "$HOME/.local/share/noctalia/plugins/orbit-wallpaper-engine/plugin.toml" 0644
     install_external_file "$plugin_source/widget.luau" \
