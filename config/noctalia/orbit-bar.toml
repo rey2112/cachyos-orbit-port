@@ -3,50 +3,75 @@
 # delete a line here to fall back to config.toml. Changes made in Noctalia's
 # settings window (~/.local/state/noctalia/settings.toml) still win over this.
 #
-# A floating, rounded, frosted bar named Top (Orbit's global menu and session
-# animations address the bar by that name). The bar keeps a real background so
-# panels that attach to it (control centre, notifications, calendar) stay
-# readable; capsules inside it give structure and an accent clock.
+# Floating glass islands on a fully transparent bar named Top (Orbit's global
+# menu and session animations address the bar by that name). Hyprland blurs
+# only the islands (hyprland.lua layer rule, ignore_alpha). Panels opened from
+# the bar float with their own solid background instead of attaching to the
+# transparent bar.
 
 [shell]
 font_family = "JetBrains Mono"
+
+[shell.panel]
+launcher_placement = "floating"
+clipboard_placement = "floating"
+control_center_placement = "floating"
+wallpaper_placement = "floating"
+session_placement = "floating"
+open_near_click_control_center = true
+open_near_click_session = true
 
 [bar.Top]
 position = "top"
 thickness = 36
 scale = 1.0
 font_scale = 1.0
-background_opacity = 0.72
-compositor_blur = true
-shadow = true
-margin_edge = 8
+background_opacity = 0.0
+compositor_blur = false
+shadow = false
+margin_edge = 6
 margin_ends = 10
-padding = 6
-widget_spacing = 6
+padding = 0
+widget_spacing = 8
 concave_edge_corners = false
-radius_top_left = 16
-radius_top_right = 16
-radius_bottom_left = 16
-radius_bottom_right = 16
+radius_top_left = 0
+radius_top_right = 0
+radius_bottom_left = 0
+radius_bottom_right = 0
 capsule = false
-start = ["launcher", "active_window"]
+start = ["group:app"]
 center = ["group:spaces"]
 end = ["group:status", "group:time"]
 
     [[bar.Top.capsule_group]]
+    id = "app"
+    members = ["launcher", "active_window"]
+    fill = "surface"
+    opacity = 0.4
+    border = "outline"
+    border_width = 1.0
+    radius = 13.0
+    padding = 10.0
+    widget_spacing = 8
+
+    [[bar.Top.capsule_group]]
     id = "spaces"
     members = ["workspaces"]
-    fill = "surface_variant"
-    opacity = 0.7
-    radius = 12.0
-    padding = 8.0
+    fill = "surface"
+    opacity = 0.4
+    border = "outline"
+    border_width = 1.0
+    radius = 13.0
+    padding = 10.0
 
     [[bar.Top.capsule_group]]
     id = "status"
     members = ["tray", "media", "network", "volume", "notifications"]
-    fill = "surface_variant"
-    opacity = 0.7
-    radius = 12.0
+    fill = "surface"
+    opacity = 0.4
+    border = "outline"
+    border_width = 1.0
+    radius = 13.0
     padding = 10.0
     widget_spacing = 10
 
@@ -54,8 +79,8 @@ end = ["group:status", "group:time"]
     id = "time"
     members = ["clock", "session"]
     fill = "primary"
-    opacity = 1.0
-    radius = 12.0
+    opacity = 0.85
+    radius = 13.0
     padding = 12.0
     widget_spacing = 10
 
@@ -89,8 +114,7 @@ color = "on_primary"
 [widget.tray]
 capsule = false
 
-# Numbered pills; Orbit keeps workspaces 1-5 per monitor persistent, so all
-# five always show.
+# Numbered pills; Orbit keeps workspaces 1-5 per monitor persistent.
 [widget.workspaces]
 capsule = false
 style = "regular"
