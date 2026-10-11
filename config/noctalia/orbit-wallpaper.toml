@@ -1,0 +1,5 @@
+# Orbit's Wallpaper Engine draws the desktop background. Noctalia's own
+# wallpaper renders on the same Background layer and would cover it, so it is
+# disabled here. This file sorts after config.toml, so it wins.
+[wallpaper]
+enabled = false
