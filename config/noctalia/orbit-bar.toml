@@ -1,0 +1,60 @@
+# Orbit bar look for Noctalia. Edit freely: this file only styles the bar.
+# It sorts after config.toml, so these values win over the same keys there;
+# delete a line here to fall back to config.toml. Changes made in Noctalia's
+# settings window (~/.local/state/noctalia/settings.toml) still win over this.
+#
+# One slim floating glass bar named Top (Orbit's global menu and session
+# animations address the bar by that name).
+
+[shell]
+font_family = "JetBrains Mono"
+
+[bar.Top]
+position = "top"
+thickness = 30
+scale = 1.0
+font_scale = 1.0
+background_opacity = 0.55
+compositor_blur = true
+shadow = true
+margin_edge = 8
+margin_ends = 12
+padding = 12
+widget_spacing = 4
+concave_edge_corners = false
+radius_top_left = 11
+radius_top_right = 11
+radius_bottom_left = 11
+radius_bottom_right = 11
+capsule = false
+capsule_group = []
+color = "on_surface"
+start = ["launcher", "active_window"]
+center = ["workspaces"]
+end = ["tray", "media", "network", "volume", "notifications", "clock", "session"]
+
+[widget.launcher]
+color = "on_surface"
+
+[widget.clock]
+color = "on_surface"
+format = "{:%a %d %b  %H:%M}"
+
+[widget.network]
+color = "on_surface"
+
+[widget.volume]
+color = "on_surface"
+
+[widget.notifications]
+color = "on_surface"
+
+[widget.session]
+color = "on_surface"
+
+[widget.tray]
+capsule = false
+
+[widget.workspaces]
+capsule = false
+show_labels = false

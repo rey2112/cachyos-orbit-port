@@ -1,0 +1,4 @@
+# Orbit runs hyprpolkitagent as a user service; a second polkit agent in
+# Noctalia cannot register in the same session.
+[shell]
+polkit_agent = false
