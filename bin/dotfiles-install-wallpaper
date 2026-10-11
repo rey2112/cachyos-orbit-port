@@ -42,6 +42,11 @@ git -C "$repo_dir" fetch --tags origin
 git -C "$repo_dir" checkout "$ref"
 make -C "$repo_dir"
 install_noctalia_integration
+# The renderer reads its default shader from the data dir (the external
+# `make install` step, whose binary and service Orbit supplies itself).
+install_external_file "$repo_dir/wave.frag" \
+    "${XDG_DATA_HOME:-$HOME/.local/share}/orbit-wallpaper-engine/wave.frag" 0644
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}/orbit-wallpaper-engine/shaders"
 # The routed launcher and its desktop entry are Orbit-owned (the external
 # v0.2.0 tree has no bin/orbit-wallpaper-launcher). bootstrap/deploy normally
 # links/seeds them already; install them only when absent.
