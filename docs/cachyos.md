@@ -162,6 +162,12 @@ CachyOS's `/etc/profile.d/Hyprland.sh` exports `GBM_BACKEND=nvidia-drm` and
 `config/hypr/hyprland.lua` sets those two when `/sys/module/nvidia` is
 loaded, and sets `GBM_BACKEND` only if it is unset. **Untested.**
 
+## end-4 Shell Mode
+
+To use end-4's illogical-impulse shell instead of Noctalia, while keeping
+Orbit's compositor side, wallpaper and lock animation, see
+[`end4-shell.md`](end4-shell.md).
+
 ## Top Bar
 
 The bar is Noctalia's, not Orbit's. Keep these separate:
