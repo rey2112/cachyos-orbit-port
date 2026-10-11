@@ -10,8 +10,8 @@ runtime=${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is required}
 state_dir="$runtime/orbit"
 state_file="$state_dir/session-workspaces.json"
 lock_file="$state_dir/session-workspaces.lock"
-lock_animation_seconds="0.65"
-unlock_animation_seconds="0.72"
+lock_animation_seconds="0.50"
+unlock_animation_seconds="0.55"
 
 mkdir -p "$state_dir"
 exec 9>"$lock_file"

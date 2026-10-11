@@ -5,7 +5,7 @@
 set -u
 
 mode=${1:?usage: orbit-noctalia-session-chrome exit|hide-start|intro|show}
-animation_seconds="0.40"
+animation_seconds="0.30"
 
 now_ms() {
     date +%s%3N

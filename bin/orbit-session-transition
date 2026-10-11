@@ -18,7 +18,7 @@ session_target=hyprland-session.target
 hyprlock_bin="${ORBIT_HYPRLOCK_BIN:-hyprlock}"
 wallpaper_reader_pid=""
 wallpaper_event_file=""
-visual_overlap_seconds="0.15"
+visual_overlap_seconds="0.08"
 
 mkdir -p "$state_dir"
 
