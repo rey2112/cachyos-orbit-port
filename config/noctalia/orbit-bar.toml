@@ -42,8 +42,8 @@ radius_bottom_right = 0
 capsule = false
 border_width = 0.0
 start = ["launcher", "workspaces", "active_window"]
-center = ["weather", "clock", "media"]
-end = ["local/orbit-wallpaper-engine:widget", "cpu", "ram", "tray", "bluetooth", "network", "volume", "notifications", "session"]
+center = ["clock", "media"]
+end = ["weather", "local/orbit-wallpaper-engine:widget", "cpu", "ram", "tray", "bluetooth", "network", "volume", "notifications", "session"]
 
 # Per-widget colours override the bar foreground, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
@@ -63,6 +63,9 @@ hide_album_art = true
 [widget.network]
 color = "on_surface"
 capsule = false
+# Icon only: no connection name next to it.
+show_label = false
+show_vpn_label = false
 
 [widget.volume]
 color = "on_surface"
