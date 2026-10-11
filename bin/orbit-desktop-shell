@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Report or select the desktop shell Orbit drives on this machine:
+#   noctalia  Noctalia + Orbit global menu (default)
+#   ii        end-4 illogical-impulse Quickshell shell (bin/install-end4-shell)
+# The choice is machine-local (~/.config/orbit/shell) and takes effect at the
+# next Hyprland login.
+set -euo pipefail
+
+state_file="${XDG_CONFIG_HOME:-$HOME/.config}/orbit/shell"
+
+current() {
+    local value=''
+    [[ -r "$state_file" ]] && read -r value < "$state_file" || true
+    case "$value" in
+        ii) printf 'ii\n' ;;
+        *) printf 'noctalia\n' ;;
+    esac
+}
+
+case "${1:-get}" in
+    get) current ;;
+    is)
+        [[ $# -eq 2 ]] || { printf 'usage: %s is noctalia|ii\n' "$0" >&2; exit 2; }
+        [[ "$(current)" == "$2" ]]
+        ;;
+    set)
+        [[ $# -eq 2 && ( "$2" == noctalia || "$2" == ii ) ]] || {
+            printf 'usage: %s set noctalia|ii\n' "$0" >&2
+            exit 2
+        }
+        if [[ "$2" == ii && ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/ii/shell.qml" ]]; then
+            printf 'end-4 shell is not installed; run bin/install-end4-shell first\n' >&2
+            exit 1
+        fi
+        mkdir -p "${state_file%/*}"
+        printf '%s\n' "$2" > "$state_file"
+        printf 'Orbit shell set to %s; log out and back in to switch.\n' "$2"
+        ;;
+    *) printf 'usage: %s [get|is NAME|set NAME]\n' "$0" >&2; exit 2 ;;
+esac

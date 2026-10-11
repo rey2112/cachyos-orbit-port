@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Regenerate the end-4 shell and Orbit palette with matugen from an accent
+# colour, without touching the wallpaper (Orbit's engine draws it).
+#   orbit-ii-palette [#RRGGBB]
+# Without an argument: end-4's configured accent, else Orbit's current
+# primary colour, else a default blue.
+set -euo pipefail
+
+config="${XDG_CONFIG_HOME:-$HOME/.config}"
+seed="${1:-}"
+valid='^#?[0-9A-Fa-f]{6}$'
+if [[ ! "$seed" =~ $valid ]]; then
+    seed=$(jq -r '.appearance.palette.accentColor // empty' "$config/illogical-impulse/config.json" 2>/dev/null || true)
+fi
+if [[ ! "$seed" =~ $valid ]]; then
+    seed=$(sed -n 's/^local primary = "rgb(\([0-9A-Fa-f]\{6\}\))"$/\1/p' "$config/hypr/noctalia.lua" 2>/dev/null | head -n1)
+fi
+[[ "$seed" =~ $valid ]] || seed='7aa2f7'
+seed="#${seed#\#}"
+
+mode=dark
+if [[ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" == "'prefer-light'" ]]; then
+    mode=light
+fi
+command -v matugen >/dev/null || { printf 'orbit-ii-palette: matugen is not installed\n' >&2; exit 1; }
+exec matugen --source-color-index 0 -c "$config/matugen/config.toml" --mode "$mode" color hex "$seed"

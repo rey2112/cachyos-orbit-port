@@ -120,8 +120,13 @@ bootstrap_orbit_appearance() {
     local terminal_source="$HOME/.config/wezterm/colors/Noctalia.toml"
 
     # Noctalia exposes a synchronous template application command, so use it
-    # only when the source outputs are absent on a fresh session.
-    if [[ ! -f "$noctalia_source" || ! -f "$terminal_source" ]]; then
+    # only when the source outputs are absent on a fresh session. With the
+    # end-4 shell, matugen renders the same files.
+    if [[ ! -f "$noctalia_source" || ! -f "$terminal_source" ]] && \
+        "$HOME/.local/bin/orbit-desktop-shell" is ii 2>/dev/null; then
+        "$HOME/.local/bin/orbit-ii-palette" >/dev/null 2>&1 ||
+            log "end-4 palette generation failed; Orbit appearance is deferred"
+    elif [[ ! -f "$noctalia_source" || ! -f "$terminal_source" ]]; then
         if ! noctalia msg templates-apply >/dev/null 2>&1; then
             log "Noctalia templates are not ready; Orbit appearance is deferred"
             return 0

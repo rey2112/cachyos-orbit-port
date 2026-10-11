@@ -8,6 +8,15 @@
 local home = os.getenv("HOME")
 package.path = home .. "/.config/hypr/?.lua;" .. package.path
 
+-- Desktop shell for this machine: "noctalia" (default) or "ii" (end-4
+-- illogical-impulse). Selected with `orbit-desktop-shell set NAME`.
+local orbitShell = "noctalia"
+local orbitShellFile = io.open(home .. "/.config/orbit/shell", "r")
+if orbitShellFile then
+    if (orbitShellFile:read("*l") or ""):match("^%s*ii%s*$") then orbitShell = "ii" end
+    orbitShellFile:close()
+end
+
 -- Application launcher paths: terminal, file manager, app menu, utility scripts.
 local terminal = "wezterm"
 local fileManager = "nautilus"
@@ -131,15 +140,24 @@ hl.on("hyprland.start", function()
     -- readiness is confirmed.
     hl.exec_cmd(home .. "/.local/bin/orbit-session-bootstrap &")
 
-    -- Start Noctalia from the graphical session so applications it launches
-    -- inherit the active logind session rather than the user service cgroup.
-    hl.exec_cmd("/usr/bin/noctalia &")
+    if orbitShell == "ii" then
+        -- end-4 shell (bar, sidebars, overview, notifications, polkit).
+        -- The global menu anchors to Noctalia's bar, so it is not started.
+        hl.exec_cmd("qs -c ii &")
+        hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
+        hl.exec_cmd("wl-paste --type text --watch bash -c 'cliphist store && qs -c ii ipc call cliphistService update'")
+        hl.exec_cmd("wl-paste --type image --watch bash -c 'cliphist store && qs -c ii ipc call cliphistService update'")
+    else
+        -- Start Noctalia from the graphical session so applications it launches
+        -- inherit the active logind session rather than the user service cgroup.
+        hl.exec_cmd("/usr/bin/noctalia &")
 
-    -- Start the global-menu frontend after the Wayland compositor is ready.
-    -- The executable is supplied by PATH, or by ORBIT_QUICKSHELL when a local
-    -- installation is not on the graphical session PATH.
-    local quickshell = os.getenv("ORBIT_QUICKSHELL") or "quickshell"
-    hl.exec_cmd(quickshell .. " --config global-menu --no-duplicate &")
+        -- Start the global-menu frontend after the Wayland compositor is ready.
+        -- The executable is supplied by PATH, or by ORBIT_QUICKSHELL when a local
+        -- installation is not on the graphical session PATH.
+        local quickshell = os.getenv("ORBIT_QUICKSHELL") or "quickshell"
+        hl.exec_cmd(quickshell .. " --config global-menu --no-duplicate &")
+    end
 
     -- Explicit orbit-game-run sessions own game-mode policy.
 
@@ -368,7 +386,11 @@ hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(chatGPT))               -- Open ChatG
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(openCode))              -- Open OpenCode in a dedicated terminal.
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(dailyNote))             -- Open today's Obsidian daily note.
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd(scratchpad))     -- Open the permanent Obsidian scratchpad.
-hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(launcher))          -- Open the Noctalia launcher.
+if orbitShell == "ii" then
+    hl.bind(mainMod .. " + Space", hl.dsp.global("quickshell:searchToggle")) -- Open the end-4 search/launcher.
+else
+    hl.bind(mainMod .. " + Space", hl.dsp.exec_cmd(launcher))          -- Open the Noctalia launcher.
+end
 hl.bind("ALT + TAB", hl.dsp.exec_cmd(workspaceAltTab .. " cycle")) -- Workspace-oriented ScrollOverview switcher.
 
 -- Window management
@@ -382,7 +404,11 @@ hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(animateLock))     -- Lock screen with
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(animateShutdown)) -- Shutdown session with animation.
 
 -- Screenshots and recording
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd([[grim -g "$(slurp)" - | wl-copy --type image/png]])) -- Screenshot (select region, copy to clipboard).
+if orbitShell == "ii" then
+    hl.bind(mainMod .. " + SHIFT + S", hl.dsp.global("quickshell:regionScreenshot")) -- end-4 region snip.
+else
+    hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd([[grim -g "$(slurp)" - | wl-copy --type image/png]])) -- Screenshot (select region, copy to clipboard).
+end
 hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd(gpuScreenRecorder .. " record"))                      -- Start GPU screen recording.
 hl.bind(mainMod .. " + SHIFT + Z", hl.dsp.exec_cmd(gpuScreenRecorder .. " replay"))                      -- Save instant replay (last 30s).
 
@@ -629,5 +655,10 @@ hl.layer_rule({
     blur_popups = false,
 })
 
--- For Noctalia Color templates
+-- end-4 shell keybinds and layer rules.
+if orbitShell == "ii" then
+    require("shells.ii")
+end
+
+-- For Noctalia Color templates (rendered by matugen when the end-4 shell is active)
 require("noctalia").apply_theme()
