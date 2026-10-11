@@ -8,6 +8,8 @@ uniform float effect_time;
 uniform vec2 surface_size;
 
 void main() {
+    // Orbit focus tuning: 1.6x faster playback, half the distortion.
+    float t = effect_time * 1.6;
     float left = v_texcoord.x;
     float right = 1.0 - v_texcoord.x;
     float top = v_texcoord.y;
@@ -17,15 +19,15 @@ void main() {
         right <= min(min(top, bottom), left) ? vec2(-1.0, 0.0) :
         top <= bottom ? vec2(0.0, 1.0) : vec2(0.0, -1.0);
     float size_scale = clamp(1100.0 / max(surface_size.y, 1.0), 0.75, 2.5);
-    float speed = exp(-effect_time * 4.0) * smoothstep(0.7, 0.35, effect_time);
-    float wave_phase = edge_distance * 34.0 - effect_time * 18.0;
-    float front = exp(-pow((edge_distance - effect_time * 0.32) * 10.0, 2.0));
-    float edge_hit = exp(-effect_time * 8.0) * exp(-edge_distance * 70.0);
+    float speed = exp(-t * 4.0) * smoothstep(0.7, 0.35, t);
+    float wave_phase = edge_distance * 34.0 - t * 18.0;
+    float front = exp(-pow((edge_distance - t * 0.32) * 10.0, 2.0));
+    float edge_hit = exp(-t * 8.0) * exp(-edge_distance * 70.0);
     float wave = sin(wave_phase) * front + edge_hit;
     float envelope = exp(-edge_distance * 2.5) * speed;
-    vec2 offset = direction * wave * envelope * 0.0036 * size_scale;
+    vec2 offset = direction * wave * envelope * 0.0018 * size_scale;
 
-    float chroma = (front + edge_hit) * speed * 0.0018 * size_scale;
+    float chroma = (front + edge_hit) * speed * 0.0009 * size_scale;
     vec2 red_offset = offset + direction * chroma * 1.2;
     vec2 blue_offset = offset - direction * chroma;
 
@@ -35,7 +37,7 @@ void main() {
     float alpha = texture(tex, v_texcoord + offset).a;
     float effect_strength = clamp((front + edge_hit) * speed, 0.0, 1.0);
     vec3 colour = vec3(red, green, blue);
-    colour *= 1.0 + effect_strength * 0.04;
-    alpha = min(1.0, alpha + effect_strength * 0.08);
+    colour *= 1.0 + effect_strength * 0.02;
+    alpha = min(1.0, alpha + effect_strength * 0.04);
     fragColor = vec4(colour, alpha);
 }
