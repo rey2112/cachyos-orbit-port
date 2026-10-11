@@ -28,7 +28,9 @@ Environment=ORBIT_WALLPAPER_CONTROL_FILE=%h/.cache/orbit-wallpaper-engine/contro
 Environment=ORBIT_WALLPAPER_STATUS_FILE=%h/.cache/orbit-wallpaper-engine/status
 Environment=ORBIT_WALLPAPER_EVENTS_FILE=%h/.cache/orbit-wallpaper-engine/events
 
-Restart=on-failure
+# The engine exits 0 when the compositor drops its connection ("Wayland
+# dispatch failed"); restart it then too. An explicit stop is never restarted.
+Restart=always
 RestartSec=2
 RestartPreventExitStatus=78
 TimeoutStartSec=70s
