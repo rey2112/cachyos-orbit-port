@@ -2,3 +2,47 @@
 # Noctalia cannot register in the same session.
 [shell]
 polkit_agent = false
+
+# Route Noctalia's session menu through Orbit's animated transitions (bar and
+# dock slide out, the wallpaper plays its exit, workspaces stage) instead of
+# Noctalia's own lock screen and power commands. Listed in full, in CachyOS's
+# order, because Noctalia merges these entries by position.
+[[shell.session.actions]]
+action = "lock"
+command = "$HOME/.config/hypr/scripts/animate-lock"
+countdown_seconds = 0.0
+enabled = true
+shortcut = "1"
+variant = "default"
+
+[[shell.session.actions]]
+action = "logout"
+command = "$HOME/.local/bin/orbit-session-transition logout"
+countdown_seconds = 0.0
+enabled = true
+shortcut = "2"
+variant = "default"
+
+[[shell.session.actions]]
+action = "lock_and_suspend"
+command = "sh -c '$HOME/.config/hypr/scripts/animate-lock; sleep 4; systemctl suspend'"
+countdown_seconds = 3.0
+enabled = true
+shortcut = "3"
+variant = "default"
+
+[[shell.session.actions]]
+action = "reboot"
+command = "$HOME/.local/bin/orbit-session-transition restart"
+countdown_seconds = 3.0
+enabled = true
+shortcut = "4"
+variant = "default"
+
+[[shell.session.actions]]
+action = "shutdown"
+command = "$HOME/.local/bin/orbit-session-transition shutdown"
+countdown_seconds = 3.0
+enabled = true
+shortcut = "5"
+variant = "destructive"
