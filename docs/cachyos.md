@@ -176,8 +176,9 @@ The bar is Noctalia's, not Orbit's. Keep these separate:
   tables define position, widgets, and layout. It is user-owned and not in
   this repo; on CachyOS it starts from `/etc/skel` as `[bar.default]`.
   Edit it here or in Noctalia's settings UI.
-- **Orbit bar look:** `config/noctalia/orbit-bar.toml`, a slim floating
-  glass `Top` bar (JetBrains Mono, 11 px rounding, monochrome icons). It sorts
+- **Orbit bar look:** `config/noctalia/orbit-bar.toml`, the thin dark
+  full-width `Top` strip from the author's showcase (launcher, centred clock,
+  status icons; JetBrains Mono); the dock is the floating island. It sorts
   after `config.toml`, so its values win; edit or delete lines freely. Changes
   saved from Noctalia's settings window go to
   `~/.local/state/noctalia/settings.toml` and win over both.

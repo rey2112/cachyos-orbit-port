@@ -9,6 +9,8 @@ ConditionEnvironment=WAYLAND_DISPLAY
 Type=simple
 ExecStart=/usr/bin/hypridle
 Restart=on-failure
+# Back off while the compositor socket comes up instead of hitting the start limit.
+RestartSec=2
 
 [Install]
 WantedBy=hyprland-session.target
