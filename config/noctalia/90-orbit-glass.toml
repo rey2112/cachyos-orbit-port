@@ -1,11 +1,13 @@
 [dock]
-background_opacity = 0.45
+background_opacity = 0.6
 
 [notification]
-background_opacity = 0.55
+background_opacity = 0.85
 
 [osd]
-background_opacity = 0.55
+background_opacity = 0.8
 
+# "soft" keeps panels translucent but readable; "glass" was too see-through
+# for the control centre and status panels.
 [shell.panel]
-transparency_mode = "glass"
+transparency_mode = "soft"
