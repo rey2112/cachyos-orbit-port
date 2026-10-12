@@ -82,10 +82,11 @@ def check_noctalia_and_global_menu():
 def check_plugins():
     require_session()
     output = command("hyprctl", "plugins", "list").lower()
-    names = ["hyprglass", "scrolloverview"]
-    # HyprWindowShade hooks compositor functions; Hyprland supports that only on x86-64.
+    names = ["hyprglass"]
+    # ScrollOverview and HyprWindowShade hook compositor functions; Hyprland
+    # supports that only on x86-64.
     if platform.machine() in ("x86_64", "AMD64"):
-        names.append("hyprwindowshade")
+        names += ["hyprwindowshade", "scrolloverview"]
     for name in names:
         assert name in output, output
 

@@ -16,18 +16,15 @@ hl.config({
 
 -- macOS / GNOME style gestures:
 --   three fingers left/right  previous / next workspace (follows the fingers)
---   three fingers up           workspace overview (ScrollOverview, as Alt+Tab)
---   three fingers down         close the overview
+--   three fingers up           app launcher, like Launchpad
+-- (ScrollOverview's workspace overview needs function hooks, which Hyprland
+-- supports only on x86-64, so there is no overview gesture on Apple Silicon.)
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
-local function overview(command)
-    return function()
-        if hl.plugin.scrolloverview then
-            hl.plugin.scrolloverview._dispatch("overview", command)
-        end
-    end
-end
-hl.gesture({ fingers = 3, direction = "up", action = overview("open all") })
-hl.gesture({ fingers = 3, direction = "down", action = overview("close all") })
+hl.gesture({
+    fingers = 3,
+    direction = "up",
+    action = function() os.execute("noctalia msg panel-toggle launcher >/dev/null 2>&1 &") end,
+})
 
 -- Workspaces slide sideways on the laptop so the animation matches the
 -- horizontal swipe (the desktop keeps Orbit's vertical slide). Same spring

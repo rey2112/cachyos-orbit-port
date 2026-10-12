@@ -25,7 +25,7 @@ glass bar and dock, WASD binds, no window ripples) plus a laptop layer.
 
    It installs packages with `bootstrap/install-packages-fedora` (and lists
    any that no enabled repository provides), backs up your config, deploys,
-   builds Hyprglass and ScrollOverview, builds the Wallpaper Engine from
+   builds Hyprglass, builds the Wallpaper Engine from
    source and writes a summary to `~/orbit-first-run-summary.txt`.
 4. Log out and start a new Hyprland session.
 
@@ -34,8 +34,8 @@ glass bar and dock, WASD binds, no window ripples) plus a laptop layer.
 | Area | On Apple Silicon |
 |---|---|
 | Wallpaper Engine | The tracked `bin/orbit-wallpaper-engine` is x86-64. `bin/install-wallpaper-engine-patched` builds v0.2.0 from source and points the service at it |
-| HyprWindowShade, Dynamic Cursors | Not built. They hook compositor functions, which Hyprland supports only on x86-64. Window ripples are already off; the cursor stays static |
-| Hyprglass, ScrollOverview | Built from source. Fedora's Hyprland links Lua 5.4 (Arch's links 5.5); `bin/install-scrolloverview` reads the version from the Hyprland binary and builds against the same one |
+| ScrollOverview, HyprWindowShade, Dynamic Cursors | Not built. They hook compositor functions, which Hyprland supports only on x86-64: no workspace overview (Alt+Tab overview, swipe-up overview), no ripples (already off), static cursor |
+| Hyprglass | Built from source. Window glass works; its bar/dock/panel glass needs a function hook, so on aarch64 those surfaces use Hyprland's native blur instead (`hyprglassLayers` in `hyprland.lua`) |
 | NVIDIA settings | Skipped automatically (no `nvidia` module) |
 | Games, Sunshine, GPU recorder | Leave the optional integrations off; x86 games need FEX/muvm and there is no hardware encoder |
 
@@ -47,8 +47,7 @@ battery, so a desktop on the same checkout is unaffected.
 - Touchpad: natural scrolling, tap to click, two-finger right click,
   palm rejection while typing.
 - Three-finger swipe left/right changes workspace (workspaces slide sideways on
-  the laptop to match); three fingers up opens the workspace overview, down
-  closes it.
+  the laptop to match); three fingers up opens the app launcher.
 - Brightness, keyboard backlight, volume, mic and media keys (`brightnessctl`,
   `wpctl`, `playerctl`).
 - Battery (with percentage) and brightness in the bar's system island.
