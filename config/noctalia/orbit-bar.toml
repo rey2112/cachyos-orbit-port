@@ -3,13 +3,16 @@
 # delete a line here to fall back to config.toml. Changes made in Noctalia's
 # settings window (~/.local/state/noctalia/settings.toml) still win over this.
 #
-# A clear bar with frosted-glass islands: launcher and workspaces,
-# now playing, clock, weather and system stats, tray and status icons. The bar
-# is named Top: Orbit's global menu and session animations address it by
-# that name. The dock below is the floating island.
+# A clear bar with borderless liquid-glass pills, macOS-style:
+#   left    launcher + workspace dots, then now playing (hidden when idle)
+#   centre  day, date and time
+#   right   weather (hover for CPU and RAM), then status icons (tray in a drawer)
+# The bar is named Top: Orbit's global menu and session animations address it
+# by that name. The dock below is the floating island.
 
 [shell]
-font_family = "JetBrains Mono"
+# Proportional UI type for the shell; terminals keep JetBrains Mono.
+font_family = "Inter"
 
 [shell.panel]
 launcher_placement = "floating"
@@ -22,85 +25,74 @@ open_near_click_session = true
 
 [bar.Top]
 position = "top"
-thickness = 34
+thickness = 32
 scale = 1.0
-font_scale = 0.95
+font_scale = 0.92
+font_weight = 500
 background_opacity = 0.0
 compositor_blur = false
 shadow = false
 border_width = 0.0
 margin_edge = 6
-margin_ends = 10
+margin_ends = 8
 padding = 0
-widget_spacing = 8
+widget_spacing = 6
 concave_edge_corners = false
 radius_top_left = 0
 radius_top_right = 0
 radius_bottom_left = 0
 radius_bottom_right = 0
 capsule = false
+hover_highlight = true
 start = ["group:nav", "group:media"]
 center = ["group:time"]
-end = ["group:info", "group:system"]
+end = ["group:info", "group:status"]
 
-    # Liquid-glass islands on a clear bar: Hyprglass renders the glass where
-    # the islands paint (hyprland.lua). Arrays replace config.toml's groups.
+    # Liquid-glass pills on a clear bar: Hyprglass renders the glass where the
+    # pills paint (hyprland.lua). No outlines and automatic pill radius; the
+    # glass edge does the outlining. Arrays replace config.toml's groups.
     [[bar.Top.capsule_group]]
     id = "nav"
     members = ["launcher", "workspaces"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
-    border_width = 1.0
-    radius = 14.0
-    padding = 10.0
-    widget_spacing = 10
+    opacity = 0.28
+    padding = 8.0
+    widget_spacing = 8
 
-    # Now playing gets its own island beside the workspaces; it hides
-    # itself (and the island) when nothing is playing.
+    # Now playing hugs its title and hides itself (and the pill) when idle.
     [[bar.Top.capsule_group]]
     id = "media"
     members = ["media"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
-    border_width = 1.0
-    radius = 14.0
-    padding = 12.0
+    opacity = 0.28
+    padding = 10.0
     widget_spacing = 8
 
     [[bar.Top.capsule_group]]
     id = "time"
     members = ["clock"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
-    border_width = 1.0
-    radius = 14.0
+    opacity = 0.28
     padding = 12.0
-    widget_spacing = 12
 
+    # Weather shows; hovering unfolds CPU and RAM to its right.
     [[bar.Top.capsule_group]]
     id = "info"
     members = ["weather", "cpu", "ram"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
-    border_width = 1.0
-    radius = 14.0
-    padding = 10.0
-    widget_spacing = 12
-
-    [[bar.Top.capsule_group]]
-    id = "system"
-    members = ["tray", "bluetooth", "network", "volume", "notifications", "session"]
-    fill = "surface"
-    opacity = 0.35
-    border = "outline"
-    border_width = 1.0
-    radius = 14.0
+    opacity = 0.28
     padding = 10.0
     widget_spacing = 10
+    accordion = true
+    accordion_direction = "end"
+
+    [[bar.Top.capsule_group]]
+    id = "status"
+    members = ["tray", "bluetooth", "network", "volume", "notifications", "session"]
+    fill = "surface"
+    opacity = 0.28
+    padding = 10.0
+    widget_spacing = 12
 
 # Per-widget colours override the bar foreground, and CachyOS's config.toml
 # sets them, so set every bar widget explicitly.
@@ -117,10 +109,10 @@ color = "on_surface"
 capsule = false
 hide_album_art = true
 hide_when_no_media = true
-# Lengths are pixels: the island hugs the title up to max_length, then
+# Lengths are pixels: the pill hugs the title up to max_length, then
 # scrolls the title on hover.
 min_length = 0
-max_length = 360
+max_length = 320
 title_scroll = "on_hover"
 
 [widget.network]
@@ -141,19 +133,20 @@ capsule = false
 [widget.clock]
 color = "on_surface"
 capsule = false
-format = "{:%a %d %b  %H:%M}"
+font_weight = 600
+format = "{:%a %d %b   %H:%M}"
 
 [widget.weather]
 color = "on_surface"
 capsule = false
-show_condition = true
+show_condition = false
 show_temperature = true
 
-# Two system-monitor instances (named here, typed as sysmon).
+# Two system-monitor instances (named here, typed as sysmon), revealed on hover.
 [widget.cpu]
 type = "sysmon"
 stat = "cpu_usage"
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 show_glyph = true
 show_value = true
@@ -161,7 +154,7 @@ show_value = true
 [widget.ram]
 type = "sysmon"
 stat = "ram_pct"
-color = "on_surface"
+color = "on_surface_variant"
 capsule = false
 show_glyph = true
 show_value = true
@@ -175,18 +168,22 @@ hide_when_no_connected_device = true
 color = "on_surface"
 capsule = false
 
+# Tray icons live in a drawer behind one button instead of crowding the bar.
 [widget.tray]
 capsule = false
+drawer = true
 
-# Numbered workspaces; Orbit keeps workspaces 1-5 per monitor persistent.
+# Workspace dots: the focused one stretches into a bright pill, occupied ones
+# are solid, empty ones faint. Orbit keeps workspaces 1-5 per monitor.
 [widget.workspaces]
 capsule = false
-style = "regular"
-show_labels = true
-label_source = "id"
-focused_color = "primary"
-occupied_color = "on_surface"
-empty_color = "on_surface_variant"
+style = "minimal"
+show_labels = false
+active_pill_size = 2.6
+inactive_pill_size = 1.0
+focused_color = "on_surface"
+occupied_color = "on_surface_variant"
+empty_color = "outline"
 change_color_on_hover = true
 
 # Weather needs a location: resolved from your IP address. Set
