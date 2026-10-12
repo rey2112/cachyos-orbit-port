@@ -42,6 +42,14 @@ git -C "$source_dir" reset --quiet --hard "$repo_commit"
     exit 1
 }
 
+# Hyprland's function hooks exist only on x86-64. Elsewhere (Apple Silicon)
+# Orbit's patch draws layer glass by injecting into the render pass instead.
+if [[ "$(uname -m)" != x86_64 ]]; then
+    orbit_dir=$(CDPATH= cd -- "$(dirname -- "$(readlink -f -- "$0")")/.." && pwd)
+    git -C "$source_dir" apply "$orbit_dir/config/hypr/patches/hyprglass-layer-glass-without-hooks.patch"
+    printf '%s\n' 'Applied hyprglass-layer-glass-without-hooks.patch (no function hooks on this architecture).'
+fi
+
 (
     cd "$source_dir"
     make clean >/dev/null 2>&1 || true

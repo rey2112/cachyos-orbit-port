@@ -35,7 +35,7 @@ glass bar and dock, WASD binds, no window ripples) plus a laptop layer.
 |---|---|
 | Wallpaper Engine | The tracked `bin/orbit-wallpaper-engine` is x86-64. `bin/install-wallpaper-engine-patched` builds v0.2.0 from source and points the service at it |
 | ScrollOverview, HyprWindowShade, Dynamic Cursors | Not built. They hook compositor functions, which Hyprland supports only on x86-64: no workspace overview (Alt+Tab overview, swipe-up overview), no ripples (already off), static cursor |
-| Hyprglass | Built from source. Window glass works; its bar/dock/panel glass needs a function hook, so on aarch64 those surfaces use Hyprland's native blur instead (`hyprglassLayers` in `hyprland.lua`) |
+| Hyprglass | Built from source with `config/hypr/patches/hyprglass-layer-glass-without-hooks.patch` (applied by `bin/install-hyprglass` off x86-64). Upstream draws bar/dock/panel glass from a `renderLayer` function hook, which Hyprland refuses on aarch64; the patch inserts the same glass steps into the frame's render pass at `RENDER_LAST_MOMENT` instead. Window glass needs no patch |
 | NVIDIA settings | Skipped automatically (no `nvidia` module) |
 | Games, Sunshine, GPU recorder | Leave the optional integrations off; x86 games need FEX/muvm and there is no hardware encoder |
 

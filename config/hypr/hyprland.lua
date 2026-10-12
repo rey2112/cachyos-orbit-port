@@ -264,33 +264,6 @@ if hl.plugin.dynamic_cursors then
 end
 
 
--- Hyprglass draws layer glass through a renderLayer function hook, which
--- Hyprland supports only on x86-64; on aarch64 (Asahi) it keeps window glass
--- and native blur stays on for the bar, dock and panels.
-local machine = io.popen("uname -m")
-local isX86 = machine and machine:read("*l") == "x86_64"
-if machine then machine:close() end
-local hyprglassLayers = hl.plugin.hyprglass and isX86
-if not isX86 then
-    -- Native blur stands in for liquid glass on the bar, dock and panels:
-    -- a light frosted blur until patched Hyprglass draws layer glass without hooks.
-    hl.config({
-        decoration = {
-            blur = {
-                size = 5,
-                passes = 2,
-                noise = 0.0,
-                contrast = 1.0,
-                brightness = 1.03,
-                vibrancy = 0.18,
-                vibrancy_darkness = 0.1,
-                popups = true,
-                xray = false,
-            },
-        },
-    })
-end
-
 -- Hyprglass plugin: blur and glass effects for windows and layers.
 -- Plugin is loaded dynamically on startup; only configure if present.
 if hl.plugin.hyprglass then
@@ -697,7 +670,7 @@ hl.layer_rule({
     -- fallback when the plugin is not loaded. Popups (right-click menus) keep
     -- native blur either way.
     ignore_alpha = 0.1,
-    blur = not hyprglassLayers,
+    blur = not hl.plugin.hyprglass,
     blur_popups = true,
 })
 
@@ -707,7 +680,7 @@ hl.layer_rule({
     name = "noctalia-glass-islands",
     match = { namespace = "^noctalia-(bar-.+|dock)$" },
     no_anim = true,
-    blur = not hyprglassLayers,
+    blur = not hl.plugin.hyprglass,
     blur_popups = true,
     ignore_alpha = 0.1,
 })
