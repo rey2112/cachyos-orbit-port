@@ -273,17 +273,17 @@ if machine then machine:close() end
 local hyprglassLayers = hl.plugin.hyprglass and isX86
 if not isX86 then
     -- Native blur stands in for liquid glass on the bar, dock and panels:
-    -- matched to the "liquid" preset below (strong, bright, vibrant, light grain).
+    -- a light frosted blur until patched Hyprglass draws layer glass without hooks.
     hl.config({
         decoration = {
             blur = {
-                size = 12,
-                passes = 3,
-                noise = 0.012,
-                contrast = 0.95,
-                brightness = 1.08,
-                vibrancy = 0.35,
-                vibrancy_darkness = 0.2,
+                size = 5,
+                passes = 2,
+                noise = 0.0,
+                contrast = 1.0,
+                brightness = 1.03,
+                vibrancy = 0.18,
+                vibrancy_darkness = 0.1,
                 popups = true,
                 xray = false,
             },
