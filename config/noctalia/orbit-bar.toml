@@ -188,15 +188,18 @@ capsule = false
 capsule = false
 
 # Numbered workspaces; Orbit keeps workspaces 1-5 per monitor persistent.
+# Only the current workspace is a bright pill; the rest are slim dark pills
+# with light numbers (empty ones fainter), so a busy desktop stays calm.
 [widget.workspaces]
 capsule = false
 font_weight = 700
 style = "regular"
 show_labels = true
 label_source = "id"
-focused_color = "primary"
-occupied_color = "on_surface"
-empty_color = "on_surface_variant"
+pill_scale = 0.8
+focused_color = "on_surface"
+occupied_color = "surface_variant"
+empty_color = "surface_variant"
 change_color_on_hover = true
 
 # Weather needs a location: resolved from your IP address. Set
