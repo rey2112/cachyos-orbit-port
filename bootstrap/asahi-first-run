@@ -86,7 +86,8 @@ check_platform() {
     local ok=0
     . /etc/os-release 2>/dev/null || true
     printf 'os-release: ID=%s NAME=%s\n' "${ID:-?}" "${NAME:-?}"
-    if [[ "${ID:-}" != fedora || "${NAME:-}${VARIANT_ID:-}" != *[Aa]sahi* ]]; then
+    # Fedora Asahi Remix reports ID=fedora-asahi-remix and ID_LIKE=fedora.
+    if [[ "${ID:-} ${ID_LIKE:-}" != *fedora* || "${ID:-}${NAME:-}" != *[Aa]sahi* ]]; then
         printf 'error: this is not Fedora Asahi Remix (NAME=%s); rerun with --force to continue anyway\n' "${NAME:-?}"
         [[ "$force" == true ]] || ok=1
     fi
