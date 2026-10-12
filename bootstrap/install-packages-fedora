@@ -26,7 +26,7 @@ runtime_packages=(
     brightnessctl playerctl wireplumber
 )
 appearance_packages=(
-    qt6ct qt6-qtwayland jetbrains-mono-fonts-all adwaita-cursor-theme kitty nautilus
+    qt6ct qt6-qtwayland jetbrains-mono-fonts-all rsms-inter-fonts adwaita-cursor-theme kitty nautilus
     wezterm hyprqt6engine
 )
 # Plugin builds and the source-built Wallpaper Engine (aarch64 has no

@@ -186,8 +186,9 @@ The bar is Noctalia's, not Orbit's. Keep these separate:
   this repo; on CachyOS it starts from `/etc/skel` as `[bar.default]`.
   Edit it here or in Noctalia's settings UI.
 - **Orbit bar look:** `config/noctalia/orbit-bar.toml`, a clear `Top` bar
-  with four frosted-glass islands (launcher and workspaces; clock and media;
-  weather, CPU, RAM; tray and status icons), JetBrains Mono. Hyprglass
+  with borderless liquid-glass pills (launcher and workspace dots; now
+  playing; day, date and time; weather, with CPU and RAM on hover; status
+  icons with the tray in a drawer), set in Inter (`inter-font`). Hyprglass
   draws Apple-style liquid glass (`liquid` preset in `hyprland.lua`) on the
   bar islands, dock, panels, notifications, OSD and switcher; native blur is
   the fallback when the plugin is not loaded. The dock
