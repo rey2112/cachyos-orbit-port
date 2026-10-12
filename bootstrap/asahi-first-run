@@ -105,10 +105,15 @@ install_packages() {
 }
 
 report_polkit_agent_path() {
-    # Confirms the path the hyprpolkitagent unit will find.
-    rpm -ql hyprpolkitagent | grep -E '/hyprpolkitagent$' | while read -r path; do
-        [[ -f "$path" && -x "$path" ]] && printf 'agent binary: %s\n' "$path"
-    done | grep .
+    # Confirms the path the hyprpolkitagent unit will find. A plain loop: the
+    # old pipeline failed under pipefail when the last listed path was not
+    # the binary, even after printing it.
+    local path found=1
+    while read -r path; do
+        [[ -f "$path" && -x "$path" ]] || continue
+        printf 'agent binary: %s\n' "$path"; found=0
+    done < <(rpm -ql hyprpolkitagent 2>/dev/null | grep -E '/hyprpolkitagent$')
+    return $found
 }
 
 ensure_input_group() {
