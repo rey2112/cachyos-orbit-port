@@ -46,7 +46,9 @@ battery, so a desktop on the same checkout is unaffected.
 
 - Touchpad: natural scrolling, tap to click, two-finger right click,
   palm rejection while typing.
-- Three-finger swipe up or down changes workspace.
+- Three-finger swipe left/right changes workspace (workspaces slide sideways on
+  the laptop to match); three fingers up opens the workspace overview, down
+  closes it.
 - Brightness, keyboard backlight, volume, mic and media keys (`brightnessctl`,
   `wpctl`, `playerctl`).
 - Battery (with percentage) and brightness in the bar's system island.

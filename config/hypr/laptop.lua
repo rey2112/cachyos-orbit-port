@@ -14,9 +14,27 @@ hl.config({
     },
 })
 
--- Three-finger swipe up/down changes workspace, matching Orbit's vertical
--- workspace animation (Super + scroll does the same with a mouse).
-hl.gesture({ fingers = 3, direction = "vertical", action = "workspace" })
+-- macOS / GNOME style gestures:
+--   three fingers left/right  previous / next workspace (follows the fingers)
+--   three fingers up           workspace overview (ScrollOverview, as Alt+Tab)
+--   three fingers down         close the overview
+hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+local function overview(command)
+    return function()
+        if hl.plugin.scrolloverview then
+            hl.plugin.scrolloverview._dispatch("overview", command)
+        end
+    end
+end
+hl.gesture({ fingers = 3, direction = "up", action = overview("open all") })
+hl.gesture({ fingers = 3, direction = "down", action = overview("close all") })
+
+-- Workspaces slide sideways on the laptop so the animation matches the
+-- horizontal swipe (the desktop keeps Orbit's vertical slide). Same spring
+-- and speeds as hyprland.lua.
+hl.animation({ leaf = "workspaces", enabled = true, speed = 1.1, spring = "orbitTunedB", style = "slide" })
+hl.animation({ leaf = "workspacesIn", enabled = true, speed = 2.45, spring = "orbitTunedB", style = "slide" })
+hl.animation({ leaf = "workspacesOut", enabled = true, speed = 2.0, spring = "orbitTunedB", style = "slide" })
 
 -- Function-row keys (hold fn on the Mac keyboard if the row sends F1-F12).
 local laptopKeys = {
