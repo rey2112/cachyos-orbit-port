@@ -35,7 +35,7 @@ glass bar and dock, WASD binds, no window ripples) plus a laptop layer.
 |---|---|
 | Wallpaper Engine | The tracked `bin/orbit-wallpaper-engine` is x86-64. `bin/install-wallpaper-engine-patched` builds v0.2.0 from source and points the service at it |
 | HyprWindowShade, Dynamic Cursors | Not built. They hook compositor functions, which Hyprland supports only on x86-64. Window ripples are already off; the cursor stays static |
-| Hyprglass, ScrollOverview | Built from source as usual |
+| Hyprglass, ScrollOverview | Built from source. Fedora's Hyprland links Lua 5.4 (Arch's links 5.5); `bin/install-scrolloverview` reads the version from the Hyprland binary and builds against the same one |
 | NVIDIA settings | Skipped automatically (no `nvidia` module) |
 | Games, Sunshine, GPU recorder | Leave the optional integrations off; x86 games need FEX/muvm and there is no hardware encoder |
 

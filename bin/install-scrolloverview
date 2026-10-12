@@ -20,20 +20,29 @@ for package in hyprland pixman-1 libdrm pangocairo libinput libudev wayland-serv
     }
 done
 # ScrollOverview calls the Lua C API on Hyprland's own lua_State, so it must be
-# compiled against the Lua that Hyprland links. Hyprland 0.56 requires Lua 5.5
-# and searches these pkg-config names in this order (CMakeLists.txt). Upstream's
-# Makefile prefers lua5.4 when present, which would mismatch Hyprland.
+# compiled against the Lua that Hyprland links. Upstream Hyprland 0.56 links
+# Lua 5.5 (Arch), but Fedora's build links the system Lua 5.4, so read the
+# version from the Hyprland binary and fall back to 5.5. Upstream's Makefile
+# prefers lua5.4 when present, so the package is always passed explicitly.
+lua_version=5.5
+hyprland_binary=$(command -v Hyprland || command -v hyprland || true)
+if [[ -n "$hyprland_binary" ]]; then
+    linked=$(ldd "$hyprland_binary" 2>/dev/null | grep -oE 'liblua-?[0-9]\.?[0-9]' | head -n1 | grep -oE '[0-9]\.?[0-9]$' || true)
+    [[ "$linked" =~ ^([0-9])\.?([0-9])$ ]] && lua_version="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+fi
+lua_next="${lua_version%.*}.$(( ${lua_version#*.} + 1 ))"
 lua_pkg=''
-for candidate in lua55 lua5.5 lua-55 lua-5.5; do
+for candidate in "lua${lua_version/./}" "lua${lua_version}" "lua-${lua_version/./}" "lua-${lua_version}"; do
     if pkg-config --exists "$candidate"; then lua_pkg="$candidate"; break; fi
 done
-if [[ -z "$lua_pkg" ]] && pkg-config --exists 'lua >= 5.5' && pkg-config --exists 'lua < 5.6'; then
+if [[ -z "$lua_pkg" ]] && pkg-config --exists "lua >= $lua_version" && pkg-config --exists "lua < $lua_next"; then
     lua_pkg=lua
 fi
 [[ -n "$lua_pkg" ]] || {
-    printf '%s\n' 'error: Lua 5.5 development package is unavailable (Hyprland 0.56 links Lua 5.5)' >&2
+    printf 'error: Lua %s development package is unavailable (Hyprland links Lua %s)\n' "$lua_version" "$lua_version" >&2
     exit 1
 }
+printf 'building against %s (Hyprland links Lua %s)\n' "$lua_pkg" "$lua_version"
 
 if command -v hyprctl >/dev/null && command -v python3 >/dev/null; then
     running_commit=$(hyprctl version -j 2>/dev/null | python3 -c 'import json, sys; print(json.load(sys.stdin).get("commit", ""))' || true)
