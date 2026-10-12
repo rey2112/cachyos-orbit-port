@@ -16,7 +16,7 @@ esac
 
 core_packages=(
     hyprland hypridle hyprlock hyprpolkitagent noctalia quickshell
-    xdg-desktop-portal xdg-desktop-portal-hyprland nwg-displays
+    xdg-desktop-portal xdg-desktop-portal-hyprland
 )
 runtime_packages=(
     python3 python3-pyudev python3-evdev python3-dbus python3-gobject
@@ -27,7 +27,7 @@ runtime_packages=(
 )
 appearance_packages=(
     qt6ct qt6-qtwayland jetbrains-mono-fonts-all adwaita-cursor-theme kitty nautilus
-    wezterm hyprqt6engine kora-icon-theme
+    wezterm hyprqt6engine
 )
 # Plugin builds and the source-built Wallpaper Engine (aarch64 has no
 # prebuilt engine). Hyprland 0.56 links Lua 5.5; check `pkg-config --modversion lua`.
@@ -38,7 +38,11 @@ build_packages=(
     mesa-libEGL-devel mesa-libGLES-devel libpng-devel
 )
 
-packages=("${core_packages[@]}" "${runtime_packages[@]}" "${appearance_packages[@]}" "${build_packages[@]}")
+# Nice to have, never a failure: nwg-displays only edits monitors.lua (the
+# first run seeds one) and apps fall back to the default icons without Kora.
+optional_packages=(nwg-displays kora-icon-theme)
+
+packages=("${core_packages[@]}" "${runtime_packages[@]}" "${appearance_packages[@]}" "${build_packages[@]}" "${optional_packages[@]}")
 
 command -v dnf >/dev/null || { printf 'error: dnf not found; this script is for Fedora\n' >&2; exit 1; }
 
@@ -62,6 +66,15 @@ if [[ ${#installable[@]} -gt 0 ]]; then
     printf '+ sudo dnf install %s\n' "${installable[*]}"
     [[ "$dry_run" == true ]] || sudo dnf install -y "${installable[@]}"
 fi
+required_unavailable=()
+for package in "${unavailable[@]}"; do
+    [[ " ${optional_packages[*]} " == *" $package "* ]] && {
+        printf 'optional, skipped: %s (not in your enabled repositories)\n' "$package"
+        continue
+    }
+    required_unavailable+=("$package")
+done
+unavailable=("${required_unavailable[@]}")
 if [[ ${#unavailable[@]} -gt 0 ]]; then
     printf '\nNot in your enabled repositories. Hyprland and QuickShell come from\n'
     printf 'sudo dnf copr enable lionheartp/Hyprland; enable a COPR for the rest, then rerun:\n'
