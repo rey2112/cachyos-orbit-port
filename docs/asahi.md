@@ -73,27 +73,9 @@ Super+Ctrl+WASD resize). Screenshots: Super+Shift+X (the Mac has no Print key).
 
 ## Lock and login screens
 
-Both are neutral (fixed graphite, white and grey, set in Inter) rather than
-following the Orbit-Mono palette.
+The lock screen is neutral (fixed graphite, white and grey, set in Inter)
+rather than following the Orbit-Mono palette. The login screen stays GDM.
 
 - **Lock screen** (`config/hypr/hyprlock.conf`): date and a large time at the
   top, your name above a frosted password pill near the bottom, battery
   percentage bottom-right (`config/hypr/scripts/lock-battery`).
-- **Login screen** (SDDM theme `config/sddm/orbit-neutral`): the same layout,
-  with the session picker bottom-left and Sleep / Restart / Shut Down
-  bottom-right. It is system-wide, so it is installed separately:
-
-  Fedora Asahi Remix's GNOME edition logs in with GDM, which cannot load
-  this theme, so install SDDM next to it and switch (reversible):
-
-  ```sh
-  sudo dnf install sddm
-  bin/install-login-theme --preview   # look at it in a window first
-  bin/install-login-theme --install   # sudo; shows at the next login
-  bin/install-login-theme --use-sddm  # sudo; SDDM from the next boot
-  bin/install-login-theme --revert    # sudo; back to the previous theme
-  bin/install-login-theme --use-gdm   # sudo; back to GDM from the next boot
-  ```
-
-  If the login screen ever comes up blank, press Ctrl+Alt+F3 (with fn),
-  log in on the console and run `--revert`.

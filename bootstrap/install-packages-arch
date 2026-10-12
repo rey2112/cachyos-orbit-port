@@ -32,7 +32,7 @@ runtime_packages=(
 )
 # Appearance adapters referenced by the authored configuration.
 appearance_packages=(
-    qt6ct qt6-wayland ttf-jetbrains-mono inter-font adwaita-cursors wezterm kitty nautilus
+    qt6ct qt6-wayland ttf-jetbrains-mono adwaita-cursors wezterm kitty nautilus
 )
 # Plugin builds (bin/install-*) and hyprpm. Hyprland 0.56 links Lua 5.5,
 # which is Arch's `lua`; do not substitute lua54.
