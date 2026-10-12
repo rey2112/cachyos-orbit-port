@@ -63,7 +63,8 @@ if [[ ${#installable[@]} -gt 0 ]]; then
     [[ "$dry_run" == true ]] || sudo dnf install -y "${installable[@]}"
 fi
 if [[ ${#unavailable[@]} -gt 0 ]]; then
-    printf '\nNot in your enabled repositories (enable the COPR that provides each, then rerun):\n'
+    printf '\nNot in your enabled repositories. Hyprland and QuickShell come from\n'
+    printf 'sudo dnf copr enable lionheartp/Hyprland; enable a COPR for the rest, then rerun:\n'
     printf '  %s\n' "${unavailable[@]}"
     exit 1
 fi

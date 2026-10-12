@@ -8,8 +8,13 @@ glass bar and dock, WASD binds, no window ripples) plus a laptop layer.
 ## Install
 
 1. Install Fedora Asahi Remix with its official installer from macOS.
-2. Enable the COPRs that provide Hyprland 0.56.2, Noctalia and QuickShell for
-   `aarch64`, the same sources the reference Fedora install uses.
+2. Enable the COPR for Hyprland and QuickShell (Noctalia 5.2.1 is in
+   Fedora 44's own `updates` repo). `lionheartp/Hyprland` ships Hyprland
+   0.56.2 and QuickShell for `aarch64`:
+
+   ```sh
+   sudo dnf copr enable -y lionheartp/Hyprland
+   ```
 3. Inside a Hyprland session:
 
    ```sh
