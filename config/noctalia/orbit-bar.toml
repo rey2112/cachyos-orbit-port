@@ -3,7 +3,8 @@
 # delete a line here to fall back to config.toml. Changes made in Noctalia's
 # settings window (~/.local/state/noctalia/settings.toml) still win over this.
 #
-# A clear bar with frosted-glass islands: launcher and workspaces,
+# A clear bar with liquid-glass pills (fully round, faint white edge, no
+# hard outline) in JetBrains Mono Medium: launcher and workspaces,
 # now playing, clock, weather and system stats, tray and status icons. The bar
 # is named Top: Orbit's global menu and session animations address it by
 # that name. The dock below is the floating island.
@@ -25,6 +26,7 @@ position = "top"
 thickness = 34
 scale = 1.0
 font_scale = 0.95
+font_weight = 500
 background_opacity = 0.0
 compositor_blur = false
 shadow = false
@@ -49,10 +51,9 @@ end = ["group:info", "group:system"]
     id = "nav"
     members = ["launcher", "workspaces"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
+    opacity = 0.32
+    border = "#FFFFFF1F"
     border_width = 1.0
-    radius = 14.0
     padding = 10.0
     widget_spacing = 10
 
@@ -62,10 +63,9 @@ end = ["group:info", "group:system"]
     id = "media"
     members = ["media"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
+    opacity = 0.32
+    border = "#FFFFFF1F"
     border_width = 1.0
-    radius = 14.0
     padding = 12.0
     widget_spacing = 8
 
@@ -73,10 +73,9 @@ end = ["group:info", "group:system"]
     id = "time"
     members = ["clock"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
+    opacity = 0.32
+    border = "#FFFFFF1F"
     border_width = 1.0
-    radius = 14.0
     padding = 12.0
     widget_spacing = 12
 
@@ -84,10 +83,9 @@ end = ["group:info", "group:system"]
     id = "info"
     members = ["weather", "cpu", "ram"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
+    opacity = 0.32
+    border = "#FFFFFF1F"
     border_width = 1.0
-    radius = 14.0
     padding = 10.0
     widget_spacing = 12
 
@@ -95,10 +93,9 @@ end = ["group:info", "group:system"]
     id = "system"
     members = ["tray", "bluetooth", "network", "volume", "notifications", "session"]
     fill = "surface"
-    opacity = 0.35
-    border = "outline"
+    opacity = 0.32
+    border = "#FFFFFF1F"
     border_width = 1.0
-    radius = 14.0
     padding = 10.0
     widget_spacing = 10
 
@@ -141,12 +138,13 @@ capsule = false
 [widget.clock]
 color = "on_surface"
 capsule = false
+font_weight = 700
 format = "{:%a %d %b  %H:%M}"
 
 [widget.weather]
 color = "on_surface"
 capsule = false
-show_condition = true
+show_condition = false
 show_temperature = true
 
 # Two system-monitor instances (named here, typed as sysmon).
@@ -181,6 +179,7 @@ capsule = false
 # Numbered workspaces; Orbit keeps workspaces 1-5 per monitor persistent.
 [widget.workspaces]
 capsule = false
+font_weight = 700
 style = "regular"
 show_labels = true
 label_source = "id"
