@@ -70,3 +70,24 @@ sits under the notch; move it in `config/noctalia/orbit-bar.toml`.
 Super is ⌘ Command, Alt is ⌥ Option. The binds are the same as on the desktop
 (Super+W close, Super+Alt+WASD focus, Super+Shift+WASD move,
 Super+Ctrl+WASD resize). Screenshots: Super+Shift+X (the Mac has no Print key).
+
+## Lock and login screens
+
+Both are neutral (fixed graphite, white and grey, set in Inter) rather than
+following the Orbit-Mono palette.
+
+- **Lock screen** (`config/hypr/hyprlock.conf`): date and a large time at the
+  top, your name above a frosted password pill near the bottom, battery
+  percentage bottom-right (`config/hypr/scripts/lock-battery`).
+- **Login screen** (SDDM theme `config/sddm/orbit-neutral`): the same layout,
+  with the session picker bottom-left and Sleep / Restart / Shut Down
+  bottom-right. It is system-wide, so it is installed separately:
+
+  ```sh
+  bin/install-login-theme --preview   # look at it in a window first
+  bin/install-login-theme --install   # sudo; shows at the next login
+  bin/install-login-theme --revert    # sudo; back to the previous theme
+  ```
+
+  If the login screen ever comes up blank, press Ctrl+Alt+F3 (with fn),
+  log in on the console and run `--revert`.

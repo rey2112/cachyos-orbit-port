@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Orbit Neutral login screen for SDDM (asahi branch). UNTESTED on hardware.
+#
+#   install-login-theme --preview   open the theme in a window (no changes)
+#   install-login-theme --install   copy it to /usr/share/sddm/themes and select it (sudo)
+#   install-login-theme --revert    remove it; SDDM falls back to its previous theme (sudo)
+#
+# Preview first: a theme that fails to load leaves SDDM on a blank screen.
+# Recovery from a blank login: Ctrl+Alt+F3 (fn on a Mac keyboard), log in on
+# the console and run this script with --revert.
+set -euo pipefail
+
+name=orbit-neutral
+orbit_dir=$(CDPATH= cd -- "$(dirname -- "$(readlink -f -- "$0")")/.." && pwd)
+source_dir="$orbit_dir/config/sddm/$name"
+theme_dir="/usr/share/sddm/themes/$name"
+# sddm.conf.d files load in name order and later ones win; KDE's own
+# kde_settings.conf sorts after numbers, so this one sorts last.
+selector=/etc/sddm.conf.d/zz-orbit-theme.conf
+
+display_manager=$(systemctl show -p Id --value display-manager.service 2>/dev/null || true)
+
+require_sddm() {
+    [[ "$display_manager" == sddm.service ]] && return 0
+    printf 'error: the login screen is %s, not SDDM; this theme is SDDM-only\n' "${display_manager:-unknown}" >&2
+    exit 1
+}
+
+case "${1:-}" in
+    --preview)
+        greeter=$(command -v sddm-greeter-qt6 || command -v sddm-greeter || true)
+        [[ -n "$greeter" ]] || { printf 'error: sddm-greeter-qt6 not found\n' >&2; exit 1; }
+        printf 'Previewing %s; close the window to finish. Logging in from it does nothing.\n' "$name"
+        exec "$greeter" --test-mode --theme "$source_dir"
+        ;;
+    --install)
+        require_sddm
+        sudo install -d -m 0755 "$theme_dir"
+        sudo install -m 0644 "$source_dir"/Main.qml "$source_dir"/metadata.desktop "$source_dir"/theme.conf "$theme_dir/"
+        sudo install -d -m 0755 /etc/sddm.conf.d
+        printf '[Theme]\nCurrent=%s\n' "$name" | sudo tee "$selector" >/dev/null
+        if grep -qs '^\[Theme\]' /etc/sddm.conf; then
+            printf 'warning: /etc/sddm.conf has its own [Theme] section, which overrides %s\n' "$selector" >&2
+        fi
+        printf 'Installed %s. It shows at the next login screen; undo with --revert.\n' "$name"
+        ;;
+    --revert)
+        sudo rm -f "$selector"
+        sudo rm -rf "$theme_dir"
+        printf 'Removed %s; SDDM uses its previous theme at the next login screen.\n' "$name"
+        ;;
+    *)
+        printf 'usage: %s --preview | --install | --revert\n' "$0" >&2
+        exit 2
+        ;;
+esac

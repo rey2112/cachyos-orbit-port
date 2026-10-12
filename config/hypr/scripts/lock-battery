@@ -1,0 +1,8 @@
+#!/bin/sh
+# Battery percentage for the lock screen (hyprlock.conf); prints nothing on
+# machines without a battery. A script so hyprlang never sees shell $vars.
+for capacity in /sys/class/power_supply/*/capacity; do
+    [ "$(cat "${capacity%/capacity}/type" 2>/dev/null)" = Battery ] || continue
+    printf "<span font_family='Inter' font_weight='500'>%s%%</span>\n" "$(cat "$capacity")"
+    exit 0
+done
