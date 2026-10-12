@@ -203,12 +203,12 @@ check_noctalia_outputs() {
 
 check_bar_name() {
     # The global menu anchors to layer namespace noctalia-bar-Top and
-    # orbit-noctalia-session-chrome hides/shows bar "Top". Report only; the
-    # bar layout in ~/.config/noctalia/config.toml stays user-owned.
-    local config="$home_dir/.config/noctalia/config.toml"
-    grep -Eq '^[[:space:]]*\[bar\.Top\]' "$config" 2>/dev/null && { printf 'found [bar.Top] in %s\n' "$config"; return 0; }
-    printf 'no [bar.Top] in %s; bars defined: %s\n' "$config" \
-        "$(grep -Eo '^[[:space:]]*\[bar\.[^].]+\]' "$config" 2>/dev/null | tr -d ' ' | tr '\n' ' ')"
+    # orbit-noctalia-session-chrome hides/shows bar "Top". Orbit's own
+    # orbit-bar.toml defines it, so look across every Noctalia config file.
+    local found
+    found=$(grep -lE '^[[:space:]]*\[bar\.Top\]' "$home_dir"/.config/noctalia/*.toml 2>/dev/null | head -n1)
+    [[ -n "$found" ]] && { printf 'found [bar.Top] in %s\n' "$found"; return 0; }
+    printf 'no [bar.Top] in %s/.config/noctalia/*.toml\n' "$home_dir"
     return 1
 }
 
