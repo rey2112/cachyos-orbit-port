@@ -4,6 +4,8 @@
 #   install-login-theme --preview   open the theme in a window (no changes)
 #   install-login-theme --install   copy it to /usr/share/sddm/themes and select it (sudo)
 #   install-login-theme --revert    remove it; SDDM falls back to its previous theme (sudo)
+#   install-login-theme --use-sddm  make SDDM the login manager from the next boot (sudo)
+#   install-login-theme --use-gdm   switch back to GNOME's GDM from the next boot (sudo)
 #
 # Preview first: a theme that fails to load leaves SDDM on a blank screen.
 # Recovery from a blank login: Ctrl+Alt+F3 (fn on a Mac keyboard), log in on
@@ -21,15 +23,29 @@ selector=/etc/sddm.conf.d/zz-orbit-theme.conf
 display_manager=$(systemctl show -p Id --value display-manager.service 2>/dev/null || true)
 
 require_sddm() {
-    [[ "$display_manager" == sddm.service ]] && return 0
-    printf 'error: the login screen is %s, not SDDM; this theme is SDDM-only\n' "${display_manager:-unknown}" >&2
-    exit 1
+    command -v sddm >/dev/null || {
+        printf 'error: SDDM is not installed (sudo dnf install sddm); this theme is SDDM-only\n' >&2
+        exit 1
+    }
+    [[ "$display_manager" == sddm.service ]] ||
+        printf 'note: the login manager is %s; run --use-sddm to switch to SDDM\n' "${display_manager:-unknown}"
+}
+
+switch_display_manager() {
+    local to="$1" from
+    command -v "$to" >/dev/null || { printf 'error: %s is not installed\n' "$to" >&2; exit 1; }
+    from=${display_manager%.service}
+    [[ "$from" == "$to" ]] && { printf '%s is already the login manager\n' "$to"; return 0; }
+    # Only one unit may own display-manager.service; --force replaces the alias.
+    [[ -n "$from" ]] && sudo systemctl disable "$from.service"
+    sudo systemctl enable --force "$to.service"
+    printf '%s is the login manager from the next boot. Undo: %s --use-%s\n' "$to" "$0" "${from:-gdm}"
 }
 
 case "${1:-}" in
     --preview)
         greeter=$(command -v sddm-greeter-qt6 || command -v sddm-greeter || true)
-        [[ -n "$greeter" ]] || { printf 'error: sddm-greeter-qt6 not found\n' >&2; exit 1; }
+        [[ -n "$greeter" ]] || { printf 'error: sddm-greeter-qt6 not found (sudo dnf install sddm)\n' >&2; exit 1; }
         printf 'Previewing %s; close the window to finish. Logging in from it does nothing.\n' "$name"
         exec "$greeter" --test-mode --theme "$source_dir"
         ;;
@@ -44,13 +60,19 @@ case "${1:-}" in
         fi
         printf 'Installed %s. It shows at the next login screen; undo with --revert.\n' "$name"
         ;;
+    --use-sddm)
+        switch_display_manager sddm
+        ;;
+    --use-gdm)
+        switch_display_manager gdm
+        ;;
     --revert)
         sudo rm -f "$selector"
         sudo rm -rf "$theme_dir"
         printf 'Removed %s; SDDM uses its previous theme at the next login screen.\n' "$name"
         ;;
     *)
-        printf 'usage: %s --preview | --install | --revert\n' "$0" >&2
+        printf 'usage: %s --preview | --install | --revert | --use-sddm | --use-gdm\n' "$0" >&2
         exit 2
         ;;
 esac

@@ -83,10 +83,16 @@ following the Orbit-Mono palette.
   with the session picker bottom-left and Sleep / Restart / Shut Down
   bottom-right. It is system-wide, so it is installed separately:
 
+  Fedora Asahi Remix's GNOME edition logs in with GDM, which cannot load
+  this theme, so install SDDM next to it and switch (reversible):
+
   ```sh
+  sudo dnf install sddm
   bin/install-login-theme --preview   # look at it in a window first
   bin/install-login-theme --install   # sudo; shows at the next login
+  bin/install-login-theme --use-sddm  # sudo; SDDM from the next boot
   bin/install-login-theme --revert    # sudo; back to the previous theme
+  bin/install-login-theme --use-gdm   # sudo; back to GDM from the next boot
   ```
 
   If the login screen ever comes up blank, press Ctrl+Alt+F3 (with fn),
