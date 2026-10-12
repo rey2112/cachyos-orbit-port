@@ -271,6 +271,25 @@ local machine = io.popen("uname -m")
 local isX86 = machine and machine:read("*l") == "x86_64"
 if machine then machine:close() end
 local hyprglassLayers = hl.plugin.hyprglass and isX86
+if not isX86 then
+    -- Native blur stands in for liquid glass on the bar, dock and panels:
+    -- matched to the "liquid" preset below (strong, bright, vibrant, light grain).
+    hl.config({
+        decoration = {
+            blur = {
+                size = 12,
+                passes = 3,
+                noise = 0.012,
+                contrast = 0.95,
+                brightness = 1.08,
+                vibrancy = 0.35,
+                vibrancy_darkness = 0.2,
+                popups = true,
+                xray = false,
+            },
+        },
+    })
+end
 
 -- Hyprglass plugin: blur and glass effects for windows and layers.
 -- Plugin is loaded dynamically on startup; only configure if present.
