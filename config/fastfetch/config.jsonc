@@ -19,8 +19,8 @@
     { "type": "custom", "format": "\u001b[90m────────────────────" },
     { "type": "os", "key": "os", "format": "{pretty-name}" },
     { "type": "kernel", "key": "kernel", "format": "{release}" },
-    { "type": "cpu", "key": "cpu", "format": "{name}" },
-    { "type": "gpu", "key": "gpu", "format": "{name}" },
+    // Apple Silicon: CPU and GPU are one chip, so one line.
+    { "type": "cpu", "key": "chip", "format": "{name}" },
     { "type": "memory", "key": "ram", "format": "{used} / {total}" },
     { "type": "packages", "key": "packages", "format": "{all}" }
   ]
