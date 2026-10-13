@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Switch the desktop background between Orbit Wallpaper Engine (animated
+# shader) and an ordinary image drawn by Noctalia.
+#
+#   orbit-wallpaper-mode static [IMAGE]   image wallpaper; engine stopped
+#   orbit-wallpaper-mode engine           back to the animated engine
+#   orbit-wallpaper-mode toggle [IMAGE]   switch to the other mode
+#   orbit-wallpaper-mode status           print the current mode
+#
+# IMAGE is any picture (or color:#RRGGBB). Without one, static mode reuses
+# the last image Noctalia had, or opens Noctalia's wallpaper picker.
+# The choice is kept in ~/.config/orbit/wallpaper-mode, which deploy and
+# orbit-apply-look respect.
+set -euo pipefail
+
+mode_file="${XDG_CONFIG_HOME:-$HOME/.config}/orbit/wallpaper-mode"
+# Sorts after orbit-wallpaper.toml (which disables Noctalia's wallpaper for
+# the engine), so it wins while static mode is on. Machine-local, not linked.
+override="${XDG_CONFIG_HOME:-$HOME/.config}/noctalia/zz-orbit-wallpaper-static.toml"
+service=orbit-wallpaper-engine.service
+
+current_mode() {
+    [[ -f "$mode_file" ]] && [[ "$(cat "$mode_file")" == static ]] && { echo static; return; }
+    echo engine
+}
+
+use_static() {
+    local image="${1:-}"
+    if [[ -n "$image" && "$image" != color:* ]]; then
+        image=$(readlink -f -- "$image")
+        [[ -f "$image" ]] || { printf 'error: no such image: %s\n' "$1" >&2; exit 1; }
+    fi
+    mkdir -p "${mode_file%/*}" "${override%/*}"
+    printf 'static\n' >"$mode_file"
+    printf '# Written by orbit-wallpaper-mode: Noctalia draws an image wallpaper.\n[wallpaper]\nenabled = true\n' >"$override"
+    systemctl --user disable --now "$service" >/dev/null 2>&1 || true
+    noctalia msg config-reload >/dev/null 2>&1 || true
+    if [[ -n "$image" ]]; then
+        noctalia msg wallpaper-set "$image"
+    elif [[ -z "$(noctalia msg wallpaper-get 2>/dev/null)" ]]; then
+        noctalia msg panel-toggle wallpaper >/dev/null 2>&1 || true
+        printf 'Pick an image in the wallpaper panel, or rerun with a path.\n'
+    fi
+    printf 'Static wallpaper on; the engine is stopped. Back: orbit-wallpaper-mode engine\n'
+}
+
+use_engine() {
+    rm -f "$override" "$mode_file"
+    noctalia msg config-reload >/dev/null 2>&1 || true
+    systemctl --user enable --now "$service" >/dev/null
+    sleep 2
+    "$HOME/.local/bin/orbit-wallpaper-control" intro >/dev/null 2>&1 || true
+    printf 'Wallpaper Engine on.\n'
+}
+
+case "${1:-}" in
+    static) use_static "${2:-}" ;;
+    engine) use_engine ;;
+    toggle) if [[ "$(current_mode)" == static ]]; then use_engine; else use_static "${2:-}"; fi ;;
+    status) current_mode ;;
+    *) printf 'usage: %s static [IMAGE] | engine | toggle [IMAGE] | status\n' "${0##*/}" >&2; exit 2 ;;
+esac

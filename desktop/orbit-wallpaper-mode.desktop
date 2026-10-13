@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Toggle Wallpaper Engine
+GenericName=Wallpaper Mode
+Comment=Switch between the animated Orbit Wallpaper Engine and a normal image wallpaper
+Exec=orbit-wallpaper-mode toggle
+Icon=preferences-desktop-wallpaper
+Categories=Settings;DesktopSettings;
+Keywords=wallpaper;static;image;engine;toggle;

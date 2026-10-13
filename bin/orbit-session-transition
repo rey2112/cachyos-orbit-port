@@ -75,6 +75,9 @@ wait_wallpaper_ready() {
 
 wallpaper_transition_start() {
     local command="$1" timeout_seconds="$2" id="orbit-$(date +%s%N)"
+    # Static wallpaper mode disables the engine: skip its animation at once
+    # instead of waiting for a readiness that never comes.
+    systemctl --user is-enabled --quiet orbit-wallpaper-engine.service || return 1
     wallpaper_event_file="$(mktemp "$state_dir/event.XXXXXX")" || return 1
     wait_wallpaper_ready "$(deadline_after 2)" || {
         rm -f "$wallpaper_event_file"
