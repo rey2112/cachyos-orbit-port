@@ -1,31 +1,27 @@
-// Orbit fastfetch: small CachyOS logo and a quiet, monochrome summary.
-// Grey keys, white values, no blue or green; terminal colours come from
-// the Orbit-Mono palette.
+// Orbit fastfetch (asahi branch): small Fedora logo, monochrome, no colour
+// blocks. White logo and values, grey labels.
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
     "type": "builtin",
-    "source": "cachyos_small",
+    "source": "fedora_small",
     "color": { "1": "white", "2": "white" },
     "padding": { "top": 1, "left": 2, "right": 4 }
   },
   "display": {
     "separator": "",
     "color": { "keys": "90", "title": "white", "output": "white", "separator": "90" },
-    "key": { "width": 10 },
-    "bar": { "char": { "elapsed": "━", "total": "─" }, "border": { "left": "", "right": "" }, "width": 12 },
-    "percent": { "type": 3, "color": { "green": "white", "yellow": "white", "red": "red" } }
+    "key": { "width": 10 }
   },
   "modules": [
     "break",
-    { "type": "title", "format": "{user-name-colored}{at-symbol-colored}{host-name-colored}" },
-    { "type": "custom", "format": "\u001b[90m──────────────────────────────" },
+    { "type": "title", "format": "{user-name}@{host-name}" },
+    { "type": "custom", "format": "\u001b[90m────────────────────" },
+    { "type": "os", "key": "os", "format": "{pretty-name}" },
     { "type": "kernel", "key": "kernel", "format": "{release}" },
-    { "type": "cpu", "key": "cpu", "format": "{name} \u001b[90m· {cores-logical} threads", "showPeCoreCount": false },
-    { "type": "gpu", "key": "gpu", "format": "{name}", "hideType": "integrated" },
-    { "type": "memory", "key": "ram", "format": "{used} \u001b[90m/\u001b[37m {total}  {percentage-bar}" },
-    { "type": "packages", "key": "packages", "format": "{all}" },
-    "break",
-    { "type": "colors", "symbol": "circle", "paddingLeft": 0 }
+    { "type": "cpu", "key": "cpu", "format": "{name}" },
+    { "type": "gpu", "key": "gpu", "format": "{name}" },
+    { "type": "memory", "key": "ram", "format": "{used} / {total}" },
+    { "type": "packages", "key": "packages", "format": "{all}" }
   ]
 }
