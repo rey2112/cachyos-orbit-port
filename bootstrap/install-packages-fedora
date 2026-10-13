@@ -26,7 +26,7 @@ runtime_packages=(
     brightnessctl playerctl wireplumber
 )
 appearance_packages=(
-    qt6ct qt6-qtwayland jetbrains-mono-fonts-all adwaita-cursor-theme kitty nautilus
+    qt6ct qt6-qtwayland jetbrains-mono-fonts-all adwaita-cursor-theme breeze-icon-theme kitty nautilus
     wezterm hyprqt6engine
 )
 # Plugin builds and the source-built Wallpaper Engine (aarch64 has no
@@ -39,7 +39,7 @@ build_packages=(
 )
 
 # Nice to have, never a failure: nwg-displays only edits monitors.lua (the
-# first run seeds one) and apps fall back to the default icons without Kora.
+# first run seeds one); bin/install-kora-icons installs Kora from upstream.
 optional_packages=(nwg-displays kora-icon-theme)
 
 packages=("${core_packages[@]}" "${runtime_packages[@]}" "${appearance_packages[@]}" "${build_packages[@]}" "${optional_packages[@]}")

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Install the Kora icon theme Orbit names (appearance.toml, hyprqt6engine.conf)
+# on distributions that do not package it (Fedora). Copies the pinned kora/
+# folder to ~/.local/share/icons/kora and selects it for GTK and GNOME apps.
+set -euo pipefail
+
+repo_url="https://github.com/bikass/kora.git"
+repo_commit="ba1e9e279aa5b3f6674ec6b17534ea05032de580"
+source_dir="${XDG_CACHE_HOME:-$HOME/.cache}/orbit-kora-$repo_commit"
+destination="${XDG_DATA_HOME:-$HOME/.local/share}/icons/kora"
+
+command -v git >/dev/null || { printf 'error: git is required\n' >&2; exit 1; }
+
+if [[ -e "$destination" ]]; then
+    printf 'Kora is already installed at %s\n' "$destination"
+else
+    if [[ ! -d "$source_dir/.git" ]]; then
+        git clone --quiet --filter=blob:none --no-checkout "$repo_url" "$source_dir"
+        git -C "$source_dir" sparse-checkout set kora
+    fi
+    git -C "$source_dir" fetch --quiet --depth=1 origin "$repo_commit"
+    git -C "$source_dir" checkout --quiet --detach "$repo_commit"
+    mkdir -p "${destination%/*}"
+    cp -r "$source_dir/kora" "$destination"
+    command -v gtk-update-icon-cache >/dev/null && gtk-update-icon-cache -q -f -t "$destination" || true
+    printf 'Installed Kora at %s\n' "$destination"
+fi
+
+# GTK/GNOME apps read this setting; Qt apps get kora from hyprqt6engine.conf.
+command -v gsettings >/dev/null && gsettings set org.gnome.desktop.interface icon-theme kora || true
+printf 'Icon theme set to kora. Reopen apps to see the new icons.\n'
