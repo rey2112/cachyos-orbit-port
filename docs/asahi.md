@@ -51,6 +51,9 @@ battery, so a desktop on the same checkout is unaffected.
 - Brightness, keyboard backlight, volume, mic and media keys (`brightnessctl`,
   `wpctl`, `playerctl`).
 - Battery (with percentage) and brightness in the bar's system island.
+- Night light (like f.lux): Noctalia warms the screen to 3400 K from sunset
+  to sunrise with a one-hour fade (`[nightlight]` in `orbit-shell.toml`). The
+  bar's moon icon toggles it; right-click holds it on.
 - Lid close and idle suspend lock first (`before_sleep_cmd` in
   `hypridle.conf`); logind's default lid action suspends.
 

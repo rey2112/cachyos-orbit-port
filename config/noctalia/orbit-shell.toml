@@ -52,3 +52,13 @@ variant = "destructive"
 # plays its own transitions instead.
 [lockscreen]
 enabled = false
+
+# Night light, like f.lux: warms the screen from sunset to sunrise (computed
+# from [location], with a one-hour fade). Bar moon icon: click toggles it,
+# right-click holds it warm regardless of the time.
+[nightlight]
+enabled = true
+force = false
+temperature_day = 6500
+temperature_night = 3400
+

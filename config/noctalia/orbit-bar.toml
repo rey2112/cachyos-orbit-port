@@ -91,7 +91,7 @@ end = ["group:info", "group:system"]
 
     [[bar.Top.capsule_group]]
     id = "system"
-    members = ["tray", "bluetooth", "network", "volume", "brightness", "battery", "notifications", "session"]
+    members = ["tray", "bluetooth", "network", "volume", "brightness", "nightlight", "battery", "notifications", "session"]
     fill = "surface"
     opacity = 0.32
     border = "#FFFFFF1F"
@@ -169,6 +169,10 @@ show_value = true
 color = "on_surface"
 capsule = false
 show_label = false
+
+[widget.nightlight]
+color = "on_surface"
+capsule = false
 
 [widget.battery]
 color = "on_surface"
