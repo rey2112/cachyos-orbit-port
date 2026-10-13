@@ -45,9 +45,13 @@ for _ in $(seq 1 50); do noctalia msg status >/dev/null 2>&1 && break; sleep 0.1
 
 step "Restarting the wallpaper"
 systemctl --user daemon-reload
-systemctl --user restart orbit-wallpaper-engine.service
-sleep 3
-"$HOME/.local/bin/orbit-wallpaper-control" intro >/dev/null 2>&1 || true
+if [ "$("$HOME/.local/bin/orbit-wallpaper-mode" status 2>/dev/null)" = static ]; then
+    printf 'Static wallpaper mode: leaving the engine off (orbit-wallpaper-mode engine to switch back)\n'
+else
+    systemctl --user restart orbit-wallpaper-engine.service
+    sleep 3
+    "$HOME/.local/bin/orbit-wallpaper-control" intro >/dev/null 2>&1 || true
+fi
 
 step "Done"
 printf 'Noctalia log: ~/noctalia.log\n'

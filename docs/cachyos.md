@@ -270,3 +270,22 @@ Run in a Linux build container, not CachyOS:
   hyprland/wezterm templates. Conflict moves, deploy, verify, and contract
   tests passed. Plugin builds were not attempted (no Hyprland headers).
   This run found the deploy glob bug and the Noctalia `shadow` regression.
+
+## Normal image wallpaper instead of the engine
+
+`bin/orbit-wallpaper-mode` switches the background between Orbit Wallpaper
+Engine and an ordinary image drawn by Noctalia (also in the launcher as
+"Toggle Wallpaper Engine"):
+
+```sh
+orbit-wallpaper-mode static ~/Pictures/wall.jpg   # image; engine stopped and disabled
+orbit-wallpaper-mode engine                       # back to the animated engine
+orbit-wallpaper-mode toggle                       # flip between them
+```
+
+Static mode writes `~/.config/orbit/wallpaper-mode` and a machine-local
+`~/.config/noctalia/zz-orbit-wallpaper-static.toml` (re-enabling Noctalia's
+wallpaper over `orbit-wallpaper.toml`); `bootstrap/deploy` and
+`orbit-apply-look` leave the engine off while it is set, and the lock and
+unlock animations skip the engine instead of waiting for it.
+

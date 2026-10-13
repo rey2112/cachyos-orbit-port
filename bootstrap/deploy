@@ -103,6 +103,8 @@ done
 seed_file "$repo_dir/config/qt6ct/qt6ct.conf" "$home_dir/.config/qt6ct/qt6ct.conf"
 seed_file "$repo_dir/desktop/orbit-wallpaper-engine-settings.desktop" \
     "$home_dir/.local/share/applications/orbit-wallpaper-engine-settings.desktop"
+seed_file "$repo_dir/desktop/orbit-wallpaper-mode.desktop" \
+    "$home_dir/.local/share/applications/orbit-wallpaper-mode.desktop"
 install_sound_theme
 
 for source in "$repo_dir/bin"/*; do
@@ -128,7 +130,11 @@ if [[ "$optional" == true ]]; then
     systemctl --user enable orbit-game-session.timer localsend.service
 fi
 systemctl --user daemon-reload
-systemctl --user enable orbit-wallpaper-engine.service workspace-alt-tab-input.service \
+# orbit-wallpaper-mode static keeps the engine disabled; respect that choice.
+if [[ "$(cat "$home_dir/.config/orbit/wallpaper-mode" 2>/dev/null)" != static ]]; then
+    systemctl --user enable orbit-wallpaper-engine.service
+fi
+systemctl --user enable workspace-alt-tab-input.service \
     workspace-alt-tab-release.service new-workspace-apps.service \
     window-shader-events.service hypridle.service hyprpolkitagent.service
 
